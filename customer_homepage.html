@@ -12,6 +12,7 @@
             --border-color: #e5e7eb;
             --text-main: #1f2937;
             --text-muted: #6b7280;
+            --bg-body: #f3f4f6; 
         }
 
         * { box-sizing: border-box; }
@@ -19,20 +20,39 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             display: flex;
-            background-color: #ffffff;
+            background-color: var(--bg-body);
             color: var(--text-main);
         }
 
-        /* --- Sidebar --- */
+        /* --- 悬浮侧边栏 + 拖拉柄 --- */
         .sidebar {
             width: var(--sidebar-width);
-            height: 100vh;
+            height: calc(100vh - 40px);
             background-color: var(--pure-black);
             color: white;
             position: fixed;
+            left: 20px;
+            top: 20px;
             display: flex;
             flex-direction: column;
             z-index: 100;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            /* 移除 overflow:hidden 以便显示柄 */
+        }
+
+        /* 拖拉柄 (Visual Handle) */
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: ew-resize; /* 显示双向箭头手势 */
         }
 
         .sidebar-header {
@@ -44,7 +64,7 @@
         }
 
         .sidebar-header img {
-            width: 40px;
+            width: 35px;
             height: auto;
             border-radius: 6px;
             background: white;
@@ -52,7 +72,7 @@
         }
 
         .sidebar-header .brand-name {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 800;
             letter-spacing: 0.5px;
             color: #ffffff;
@@ -68,10 +88,12 @@
         .sidebar-menu li {
             padding: 14px 24px;
             cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
+            transition: 0.3s;
+            font-size: 0.85rem;
             color: #a3a3a3;
             font-weight: 500;
+            margin: 4px 15px;
+            border-radius: 10px;
         }
 
         .sidebar-menu li:hover {
@@ -87,49 +109,48 @@
 
         /* --- Main Content --- */
         .main-container {
-            margin-left: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
+            margin-left: calc(var(--sidebar-width) + 40px);
+            width: 100%;
             min-height: 100vh;
-            background: #fafafa;
+            padding-right: 20px;
         }
 
         .navbar {
             height: 70px;
-            background-color: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 40px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            margin-top: 10px;
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             margin-right: 25px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .content-area { padding: 40px; }
+        .content-area { 
+            padding: 20px; 
+            margin-top: 10px;
+        }
+
         .page-header { 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px; 
-            border-bottom: 2px solid var(--pure-black);
+            margin-bottom: 25px; 
             padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
         }
-        .page-title { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; }
+        .page-title { font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
 
-        /* 空白状态样式 */
         .empty-state-card {
             background: white;
-            border: 2px dashed var(--border-color);
+            border-radius: 20px;
             padding: 80px 40px;
             text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
@@ -155,40 +176,35 @@
             <div class="nav-links">
                 <a href="#">Announcements</a>
                 <a href="#">Products</a>
-                <a href="#">About Us</a>
+                <a href="#">About</a>
             </div>
-            <div style="font-size: 0.85rem; font-weight: 500;">
-                User: <span style="text-decoration: underline;">John Doe</span>
+            <div style="font-size: 0.85rem; font-weight: 500; background: white; padding: 8px 15px; border-radius: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                User: <strong>John Doe</strong>
             </div>
         </header>
 
         <main class="content-area">
             <div class="page-header">
                 <h1 id="currentPageTitle" class="page-title">Appointment</h1>
-                <button style="background: black; color: white; border: none; padding: 8px 16px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">+ NEW REQUEST</button>
-            </div>
+                </div>
             
             <div id="pageContent" class="empty-state-card">
                 <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">Appointment Module</h3>
-                <p style="color: #94a3b8; font-size: 0.9rem;">This section is currently under development. Detailed appointment lists will be displayed here.</p>
+                <p style="color: #94a3b8; font-size: 0.9rem;">This section is currently under development.</p>
             </div>
         </main>
     </div>
 
     <script>
         function showPage(pageName, element) {
-            // 1. 更新标题
             document.getElementById('currentPageTitle').innerText = pageName;
-            
-            // 2. 更新侧边栏选中状态
             const menuItems = document.querySelectorAll('.sidebar-menu li');
             menuItems.forEach(item => item.classList.remove('active'));
             if(element) element.classList.add('active');
 
-            // 3. 统一显示空白占位内容
             document.getElementById('pageContent').innerHTML = `
                 <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">${pageName} Module</h3>
-                <p style="color: #94a3b8; font-size: 0.9rem;">Detailed content for ${pageName} is being synchronized. Please check back later.</p>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Detailed content for ${pageName} is coming soon.</p>
             `;
         }
     </script>
