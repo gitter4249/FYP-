@@ -12,7 +12,6 @@
             --border-color: #e5e7eb;
             --text-main: #1f2937;
             --text-muted: #6b7280;
-            --bg-body: #f3f4f6; 
         }
 
         * { box-sizing: border-box; }
@@ -20,39 +19,20 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             display: flex;
-            background-color: var(--bg-body);
+            background-color: #ffffff;
             color: var(--text-main);
         }
 
-        /* --- 悬浮侧边栏 + 拖拉柄 --- */
+        /* --- Sidebar --- */
         .sidebar {
             width: var(--sidebar-width);
-            height: calc(100vh - 40px);
+            height: 100vh;
             background-color: var(--pure-black);
             color: white;
             position: fixed;
-            left: 20px;
-            top: 20px;
             display: flex;
             flex-direction: column;
             z-index: 100;
-            border-radius: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-            /* 移除 overflow:hidden 以便显示柄 */
-        }
-
-        /* 拖拉柄 (Visual Handle) */
-        .sidebar::after {
-            content: '';
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            cursor: ew-resize; /* 显示双向箭头手势 */
         }
 
         .sidebar-header {
@@ -64,7 +44,7 @@
         }
 
         .sidebar-header img {
-            width: 35px;
+            width: 40px;
             height: auto;
             border-radius: 6px;
             background: white;
@@ -72,7 +52,7 @@
         }
 
         .sidebar-header .brand-name {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 800;
             letter-spacing: 0.5px;
             color: #ffffff;
@@ -88,12 +68,10 @@
         .sidebar-menu li {
             padding: 14px 24px;
             cursor: pointer;
-            transition: 0.3s;
-            font-size: 0.85rem;
+            transition: 0.2s;
+            font-size: 0.9rem;
             color: #a3a3a3;
             font-weight: 500;
-            margin: 4px 15px;
-            border-radius: 10px;
         }
 
         .sidebar-menu li:hover {
@@ -109,48 +87,49 @@
 
         /* --- Main Content --- */
         .main-container {
-            margin-left: calc(var(--sidebar-width) + 40px);
-            width: 100%;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
             min-height: 100vh;
-            padding-right: 20px;
+            background: #fafafa;
         }
 
         .navbar {
             height: 70px;
+            background-color: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
-            margin-top: 10px;
+            padding: 0 40px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 600;
             margin-right: 25px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .content-area { 
-            padding: 20px; 
-            margin-top: 10px;
-        }
-
+        .content-area { padding: 40px; }
         .page-header { 
-            margin-bottom: 25px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px; 
+            border-bottom: 2px solid var(--pure-black);
             padding-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
         }
-        .page-title { font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+        .page-title { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; margin: 0; }
 
+        /* 内容卡片 - 删除了虚线，改为实线细边框 */
         .empty-state-card {
             background: white;
-            border-radius: 20px;
-            padding: 80px 40px;
+            border: 1px solid var(--border-color); /* 实线边框 */
+            padding: 100px 40px;
             text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
@@ -176,10 +155,10 @@
             <div class="nav-links">
                 <a href="#">Announcements</a>
                 <a href="#">Products</a>
-                <a href="#">About</a>
+                <a href="#">About Us</a>
             </div>
-            <div style="font-size: 0.85rem; font-weight: 500; background: white; padding: 8px 15px; border-radius: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                User: <strong>John Doe</strong>
+            <div style="font-size: 0.85rem; font-weight: 500;">
+                User: <span style="text-decoration: underline;">John Doe</span>
             </div>
         </header>
 
@@ -190,7 +169,7 @@
             
             <div id="pageContent" class="empty-state-card">
                 <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">Appointment Module</h3>
-                <p style="color: #94a3b8; font-size: 0.9rem;">This section is currently under development.</p>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Detailed data is being synchronized. This section will be updated soon.</p>
             </div>
         </main>
     </div>
@@ -198,13 +177,16 @@
     <script>
         function showPage(pageName, element) {
             document.getElementById('currentPageTitle').innerText = pageName;
+            
             const menuItems = document.querySelectorAll('.sidebar-menu li');
             menuItems.forEach(item => item.classList.remove('active'));
             if(element) element.classList.add('active');
 
             document.getElementById('pageContent').innerHTML = `
-                <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">${pageName} Module</h3>
-                <p style="color: #94a3b8; font-size: 0.9rem;">Detailed content for ${pageName} is coming soon.</p>
+                <div class="empty-state-card">
+                    <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">${pageName} Module</h3>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Detailed content for ${pageName} is being synchronized.</p>
+                </div>
             `;
         }
     </script>
