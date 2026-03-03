@@ -115,19 +115,17 @@
 
         .nav-links a:hover { color: var(--pure-black); }
 
-        /* 右上角账户区域的布局 */
         .account-area {
             display: flex;
             align-items: center;
-            gap: 15px; /* 图片和按钮之间的间距 */
+            gap: 15px;
         }
 
-        /* 重点改动：专业黑白风格按钮 */
         .navbar-btn {
             text-decoration: none;
-            background-color: #ffffff; /* 白底黑字 */
+            background-color: #ffffff;
             color: #000000;
-            border: 1px solid #000000; /* 黑边 */
+            border: 1px solid #000000;
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 0.8rem;
@@ -138,7 +136,7 @@
         }
 
         .navbar-btn:hover {
-            background-color: #000000; /* 悬停时黑底白字 */
+            background-color: #000000;
             color: #ffffff;
         }
 
@@ -170,8 +168,8 @@
             <span class="brand-name">YS ALUMINUM</span>
         </div>
         <ul class="sidebar-menu">
-            <li onclick="showPage('Profile', this)">Profile</li>
-            <li class="active" onclick="showPage('Appointment', this)">Appointment</li>
+            <li class="active" onclick="showPage('Profile', this)">Profile</li>
+            <li onclick="showPage('Appointment', this)">Appointment</li>
             <li onclick="showPage('Quotation', this)">Quotation</li>
             <li onclick="showPage('Invoice / Purchase', this)">Invoice / Purchase</li>
             <li onclick="showPage('Payment', this)">Payment</li>
@@ -197,12 +195,12 @@
 
         <main class="content-area">
             <div class="page-header">
-                <h1 id="currentPageTitle" class="page-title">Appointment</h1>
+                <h1 id="currentPageTitle" class="page-title">Profile</h1>
             </div>
             
             <div id="pageContent" class="empty-state-card">
-                <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">Appointment Module</h3>
-                <p style="color: #94a3b8; font-size: 0.9rem;">This section is currently under development. Detailed appointment lists will be displayed here.</p>
+                <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">Profile Module</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Manage your personal information and project preferences here.</p>
             </div>
         </main>
     </div>
