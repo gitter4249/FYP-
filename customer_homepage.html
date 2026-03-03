@@ -113,6 +113,36 @@
             letter-spacing: 0.5px;
         }
 
+        .nav-links a:hover { color: var(--pure-black); }
+
+        /* 右上角账户区域的布局 */
+        .account-area {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* 图片和按钮之间的间距 */
+        }
+
+        /* 重点改动：专业黑白风格按钮 */
+        .navbar-btn {
+            text-decoration: none;
+            background-color: #ffffff; /* 白底黑字 */
+            color: #000000;
+            border: 1px solid #000000; /* 黑边 */
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s ease;
+        }
+
+        .navbar-btn:hover {
+            background-color: #000000; /* 悬停时黑底白字 */
+            color: #ffffff;
+        }
+
+        /* --- Content Area --- */
         .content-area { padding: 40px; }
         .page-header { 
             display: flex;
@@ -122,12 +152,11 @@
             border-bottom: 2px solid var(--pure-black);
             padding-bottom: 15px;
         }
-        .page-title { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; margin: 0; }
+        .page-title { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; }
 
-        /* 内容卡片 - 删除了虚线，改为实线细边框 */
         .empty-state-card {
             background: white;
-            border: 1px solid var(--border-color); /* 实线边框 */
+            border: 1px solid var(--border-color);
             padding: 100px 40px;
             text-align: center;
         }
@@ -157,19 +186,23 @@
                 <a href="#">Products</a>
                 <a href="#">About Us</a>
             </div>
-            <div style="font-size: 0.85rem; font-weight: 500;">
-                User: <span style="text-decoration: underline;">John Doe</span>
+            
+            <div class="account-area">
+                <a href="customer_login.html" class="navbar-btn">Sign In</a>
+                <div style="font-size: 0.85rem; font-weight: 500;">
+                    User: <span style="text-decoration: underline;">John Doe</span>
+                </div>
             </div>
         </header>
 
         <main class="content-area">
             <div class="page-header">
                 <h1 id="currentPageTitle" class="page-title">Appointment</h1>
-                </div>
+            </div>
             
             <div id="pageContent" class="empty-state-card">
                 <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">Appointment Module</h3>
-                <p style="color: #94a3b8; font-size: 0.9rem;">Detailed data is being synchronized. This section will be updated soon.</p>
+                <p style="color: #94a3b8; font-size: 0.9rem;">This section is currently under development. Detailed appointment lists will be displayed here.</p>
             </div>
         </main>
     </div>
@@ -185,7 +218,7 @@
             document.getElementById('pageContent').innerHTML = `
                 <div class="empty-state-card">
                     <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">${pageName} Module</h3>
-                    <p style="color: #94a3b8; font-size: 0.9rem;">Detailed content for ${pageName} is being synchronized.</p>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Detailed content for ${pageName} is being synchronized. Please check back later.</p>
                 </div>
             `;
         }
