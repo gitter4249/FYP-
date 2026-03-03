@@ -24,22 +24,53 @@
             display: flex;
             height: 100vh;
             width: 100%;
-            /* 背景图：等会儿你自己加 */
+            /* 背景图 */
             background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)), 
                         url('YOUR_IMAGE_PATH_HERE.jpg'); 
             background-size: cover;
             background-position: center;
             justify-content: center;
             align-items: center;
+            position: relative; /* 为绝对定位按钮提供参考 */
+        }
+
+        /* --- ✨ 新增：返回按钮样式 --- */
+        .back-home-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15); /* 半透明 */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-home-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-5px); /* 悬停时往左微动 */
+        }
+
+        .back-home-btn svg {
+            transition: transform 0.3s ease;
         }
 
         .login-card {
             background: var(--bg-glass);
             backdrop-filter: blur(8px);
-            padding: 40px 30px; /* 稍微缩小内边距让并排 Logo 更协调 */
+            padding: 40px 30px;
             border-radius: 24px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
-            width: 95%; /* 手机端稍微宽一点 */
+            width: 95%;
             max-width: 420px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -51,34 +82,27 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- 重点改动：Logo 组合容器 --- */
         .logo-group {
-            display: flex; /* 让子元素并排 */
-            align-items: center; /* 垂直居中对齐 */
-            justify-content: center; /* 整体水平居中 */
-            gap: 12px; /* 图片和文字之间的间距 */
-            margin-bottom: 30px; /* 离 subtitle 的距离 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
         }
 
-        /* --- 重点改动：Logo 图片样式 --- */
         .logo-group img {
-            width: 100px; /* 根据需要调整图片大小 */
+            width: 45px; /* 调整了Logo大小使其更精致 */
             height: auto;
-            border-radius: 8px; /* 图片圆角 */
-            object-fit: contain; /* 确保图片完整显示 */
+            border-radius: 8px;
+            object-fit: contain;
         }
 
-        /* --- 重点改动：Logo 文字样式 (原 .logo 类) --- */
         .logo-text {
-            font-size: 2.1rem; /* 文字稍微小一点，和图片配合 */
+            font-size: 1.8rem;
             font-weight: 800;
             color: var(--primary-dark);
-            letter-spacing: -1.5px; /* 让文字更紧凑高级 */
-            margin: 0; /* 移除默认 margin */
-        }
-
-        .logo-text span {
-            color: var(--accent-blue);
+            letter-spacing: -1px;
+            margin: 0;
         }
 
         .subtitle {
@@ -174,6 +198,15 @@
 <body>
 
     <div class="page-container">
+        
+        <a href="customer_homepage.html" class="back-home-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Portal
+        </a>
+
         <div class="login-card" id="card">
             
             <div class="logo-group">
@@ -205,7 +238,7 @@
                     </p>
                 </div>
 
-                <button type="submit" class="btn" id="login-btn" onclick="window.location.href='index.html'">Login</button>
+                <button type="submit" class="btn" id="login-btn" onclick="window.location.href='customer_homepage.html'">Login</button>
                 <button type="submit" class="btn" id="reset-btn" onclick="alert('Reset link sent!')">Send Reset Link</button>
             </form>
 
