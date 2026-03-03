@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Portal - Aluminum System</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-dark: #1e293b;
+            --accent-blue: #3b82f6;
+            --bg-light: #f8fafc;
+            --text-main: #334155;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--primary-dark);
+            color: white;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+            color: var(--accent-blue);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: #334155;
+            color: white;
+        }
+
+        .sidebar-menu li.active {
+            background-color: var(--accent-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar-menu li i { margin-right: 12px; }
+
+        /* --- Main Content --- */
+        .main-container {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Top Navbar --- */
+        .navbar {
+            height: 70px;
+            background-color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent-blue); }
+
+        .announcement-bar {
+            background-color: #fef9c3;
+            color: #854d0e;
+            padding: 12px 40px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #fef08a;
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- Content Area --- */
+        .content-area { padding: 40px; flex-grow: 1; }
+        .page-header { margin-bottom: 30px; }
+        .page-title { font-size: 1.8rem; margin: 0; color: var(--primary-dark); }
+        
+        .empty-state {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 60px;
+            text-align: center;
+            color: #94a3b8;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-header">YS Aluminum</div>
+        <ul class="sidebar-menu">
+            <li onclick="showPage('Profile', this)">Profile</li>
+            <li class="active" onclick="showPage('Appointment', this)">Appointment</li>
+            <li onclick="showPage('Quotation', this)">Quotation</li>
+            <li onclick="showPage('Invoice / Purchase', this)">Invoice / Purchase</li>
+            <li onclick="showPage('Payment', this)">Payment</li>
+            <li onclick="showPage('Development Progress', this)">Development Progress</li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <header class="navbar">
+            <div class="nav-links">
+                <a href="#" onclick="showPage('Announcements', null)">Announcements</a>
+                <a href="#" onclick="showPage('Product Catalog', null)">Product</a>
+                <a href="#" onclick="showPage('About Us', null)">About Us</a>
+            </div>
+            <div style="font-size: 0.9rem;">
+                Account: <strong>John Doe</strong>
+            </div>
+        </header>
+
+        <div class="announcement-bar">
+            <span>🔔 <strong>Notice:</strong> High demand season. New installations may take up to 14 working days.</span>
+        </div>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h1 id="currentPageTitle" class="page-title">Appointment</h1>
+            </div>
+            
+            <div class="empty-state" id="pageContent">
+                This page is currently empty. Content for this section will be developed soon.
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showPage(pageName, element) {
+            // Update Title
+            document.getElementById('currentPageTitle').innerText = pageName;
+            
+            // Update Active Menu State
+            if(element) {
+                const menuItems = document.querySelectorAll('.sidebar-menu li');
+                menuItems.forEach(item => item.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            // Placeholder for content update
+            document.getElementById('pageContent').innerHTML = `
+                <h3>${pageName} Content Area</h3>
+                <p>Welcome to the ${pageName} section. Designs for this module are coming soon.</p>
+            `;
+        }
+    </script>
+</body>
+</html>

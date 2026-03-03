@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - YS Aluminum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --accent-blue: #3b82f6;
+            --text-gray: #64748b;
+            --bg-glass: rgba(255, 255, 255, 0.92);
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .page-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            /* 背景图：等会儿你自己加 */
+            background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)), 
+                        url('YOUR_IMAGE_PATH_HERE.jpg'); 
+            background-size: cover;
+            background-position: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(8px);
+            padding: 40px 30px; /* 稍微缩小内边距让并排 Logo 更协调 */
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+            width: 95%; /* 手机端稍微宽一点 */
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- 重点改动：Logo 组合容器 --- */
+        .logo-group {
+            display: flex; /* 让子元素并排 */
+            align-items: center; /* 垂直居中对齐 */
+            justify-content: center; /* 整体水平居中 */
+            gap: 12px; /* 图片和文字之间的间距 */
+            margin-bottom: 30px; /* 离 subtitle 的距离 */
+        }
+
+        /* --- 重点改动：Logo 图片样式 --- */
+        .logo-group img {
+            width: 100px; /* 根据需要调整图片大小 */
+            height: auto;
+            border-radius: 8px; /* 图片圆角 */
+            object-fit: contain; /* 确保图片完整显示 */
+        }
+
+        /* --- 重点改动：Logo 文字样式 (原 .logo 类) --- */
+        .logo-text {
+            font-size: 2.1rem; /* 文字稍微小一点，和图片配合 */
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -1.5px; /* 让文字更紧凑高级 */
+            margin: 0; /* 移除默认 margin */
+        }
+
+        .logo-text span {
+            color: var(--accent-blue);
+        }
+
+        .subtitle {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin-bottom: 35px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            background: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-dark);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+
+        .forgot-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .back-to-login {
+            display: none;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .register-note {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .forgot-mode #login-fields, .forgot-mode #login-btn { display: none; }
+        .forgot-mode #forgot-fields, .forgot-mode #reset-btn, .forgot-mode .back-to-login { display: block; }
+        #forgot-fields, #reset-btn { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        <div class="login-card" id="card">
+            
+            <div class="logo-group">
+                <img src="ys aluminium.jpg" alt="YS Aluminum Logo">
+                <div class="logo-text">YS Aluminium</div>
+            </div>
+
+            <p class="subtitle" id="form-subtitle">Customer Management Portal</p>
+
+            <form onsubmit="return false;">
+                <div id="login-fields">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+
+                <div id="forgot-fields">
+                    <div class="form-group">
+                        <label>Registered Email Address</label>
+                        <input type="email" placeholder="Enter your email to reset">
+                    </div>
+                    <p style="font-size: 0.8rem; color: #64748b; text-align: left; margin-top: -10px;">
+                        A password reset link will be sent to your inbox.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn" id="login-btn" onclick="window.location.href='index.html'">Login</button>
+                <button type="submit" class="btn" id="reset-btn" onclick="alert('Reset link sent!')">Send Reset Link</button>
+            </form>
+
+            <span class="forgot-link" id="toggle-forgot" onclick="toggleMode(true)">Forgot Password?</span>
+            <span class="back-to-login" onclick="toggleMode(false)">Back to Login</span>
+
+            <div class="register-note">
+                New customer? Please contact our <strong>Staff</strong><br> to create your project account.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMode(isForgot) {
+            const card = document.getElementById('card');
+            const subtitle = document.getElementById('form-subtitle');
+            const toggleForgot = document.getElementById('toggle-forgot');
+
+            if (isForgot) {
+                card.classList.add('forgot-mode');
+                subtitle.innerText = "Reset Your Password";
+                toggleForgot.style.display = "none";
+            } else {
+                card.classList.remove('forgot-mode');
+                subtitle.innerText = "Customer Management Portal";
+                toggleForgot.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
