@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Portal - YS Aluminum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --pure-black: #000000;
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #ffffff;
+            color: var(--text-main);
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--pure-black);
+            color: white;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #262626;
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: auto;
+            border-radius: 6px;
+            background: white;
+            padding: 2px;
+        }
+
+        .sidebar-header .brand-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            padding: 14px 24px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+            color: #a3a3a3;
+            font-weight: 500;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: #171717;
+            color: white;
+        }
+
+        .sidebar-menu li.active {
+            background-color: #ffffff;
+            color: var(--pure-black);
+            font-weight: 700;
+        }
+
+        /* --- Main Content --- */
+        .main-container {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            background: #fafafa;
+        }
+
+        .navbar {
+            height: 70px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a:hover { color: var(--pure-black); }
+
+        .account-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-btn {
+            text-decoration: none;
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #000000;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s ease;
+        }
+
+        .navbar-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        /* --- Content Area --- */
+        .content-area { padding: 40px; }
+        .page-header { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px; 
+            border-bottom: 2px solid var(--pure-black);
+            padding-bottom: 15px;
+        }
+        .page-title { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; }
+
+        .empty-state-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 100px 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/ys aluminium.jpg" alt="YS Logo">
+            <span class="brand-name">YS ALUMINUM</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active" onclick="showPage('Profile', this)">Profile</li>
+            <li onclick="showPage('Appointment', this)">Appointment</li>
+            <li onclick="showPage('Quotation', this)">Quotation</li>
+            <li onclick="showPage('Invoice / Purchase', this)">Invoice / Purchase</li>
+            <li onclick="showPage('Payment', this)">Payment</li>
+            <li onclick="showPage('Development Progress', this)">Development Progress</li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <header class="navbar">
+            <div class="nav-links">
+                <a href="#">Announcements</a>
+                <a href="#">Products</a>
+                <a href="#">About Us</a>
+            </div>
+            
+            <div class="account-area">
+                <div style="font-size: 0.85rem; font-weight: 500;">
+                    User: <span style="text-decoration: underline;">John Doe</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h1 id="currentPageTitle" class="page-title">Profile</h1>
+            </div>
+            
+            <div id="pageContent" class="empty-state-card">
+                <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">Profile Module</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Manage your personal information and project preferences here.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showPage(pageName, element) {
+            document.getElementById('currentPageTitle').innerText = pageName;
+            
+            const menuItems = document.querySelectorAll('.sidebar-menu li');
+            menuItems.forEach(item => item.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            document.getElementById('pageContent').innerHTML = `
+                <div class="empty-state-card">
+                    <h3 style="color: #111827; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">${pageName} Module</h3>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Detailed content for ${pageName} is being synchronized. Please check back later.</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
