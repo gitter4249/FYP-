@@ -230,13 +230,13 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             <div class="contact-left">
                 <h3>Send us a message</h3>
                 <p>Monday - Sunday: 9:30am - 8:00pm</p>
-                <a href="https://wa.me/6012XXXXXXX" target="_blank" class="btn-outline">
+                <a href="https://wa.me/60183665756" target="_blank" class="btn-outline">
                     Chat via WhatsApp
                 </a>
                 <br><br>
                 <h3>Email</h3>
                 <p>We’ll get back to you as soon as possible.</p>
-                <a href="mailto:example@email.com" class="btn-outline">
+                <a href="mailto:hengsijun00@gmail.com" class="btn-outline">
                     Email us
                 </a>
             </div>
@@ -253,7 +253,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
                 </div>
                 <br><br>
                 <h3>Phone</h3>
-                <p>Call: +60 12-XXXXXXX</p>
+                <p>Call: +60 18-3665756</p>
                 <p>Monday - Sunday: 9:30am - 10:00pm</p>
             </div>
         </div>
