@@ -17,10 +17,19 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
 
         body {
             background: #f6f6f6;
-            overflow-y: scroll; 
+            /* 强制显示垂直滚动条并预留空间，彻底解决页面切换抖动 */
+            overflow-y: scroll;
+            scrollbar-gutter: stable; 
         }
 
-        /* ================= 只修改 Bar 的 CSS ================= */
+        /* 统一的容器宽度定义 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ================= NAVBAR 修复版 ================= */
         .navbar {
             background: white;
             border-bottom: 1px solid #eee;
@@ -28,7 +37,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            width: 100%; /* 确保铺满 */
+            width: 100%;
         }
 
         .navbar-inner {
@@ -36,10 +45,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             justify-content: space-between;
             align-items: center;
             padding: 20px 0;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-left: 20px;
-            padding-right: 20px;
+            /* 这里的宽度由外层的 container 控制 */
         }
 
         .logo-img {
@@ -64,28 +70,22 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             transition: 0.3s;
         }
 
-        /* 统一导航栏悬停效果 */
         .nav-links a:not(.nav-login-btn):hover {
             color: #555;
         }
 
-        .nav-links a:not(.nav-login-btn)::after {
+        .nav-links a:not(.nav-login-btn):hover::after,
+        .nav-links a.active::after {
             content: "";
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 0%;
+            width: 100%;
             height: 2px;
             background: black;
-            transition: 0.3s;
         }
 
-        .nav-links a:not(.nav-login-btn):hover::after,
-        .nav-links a.active::after {
-            width: 100%;
-        }
-
-        /* 登录后的用户区域样式 (同步自 Homepage) */
+        /* 用户区域样式 */
         .user-section {
             display: flex;
             align-items: center;
@@ -117,7 +117,6 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             margin-left: 5px;
         }
 
-        /* 登录按钮样式 */
         .nav-login-btn {
             background: black;
             color: white !important;
@@ -131,7 +130,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             background: #8d8a8a;
         }
 
-        /* ================= 登录弹窗 CSS (保持不变) ================= */
+        /* ================= 登录弹窗 ================= */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -155,14 +154,12 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
         .modal-btn:hover { background: #f6f6f6; border-color: black; }
         .btn-admin { background: #1e293b; color: white; border: none; }
 
-        /* ================= 完全保留你的原有 Design CSS ================= */
-        .container {
-            max-width: 1200px;
+        /* ================= 详情页内容样式 ================= */
+        .product-container {
             margin: 40px auto;
             display: flex;
             gap: 50px;
             flex-wrap: wrap;
-            padding: 0 20px;
         }
 
         .product-image {
@@ -173,6 +170,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             width: 100%;
             border-radius: 12px;
         }
+
         .product-details {
             flex: 1 1 400px;
             background: white;
@@ -211,7 +209,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             display: inline-block;
             padding: 12px 25px;
             background: #000000;
-            color: rgb(255, 255, 255);
+            color: white;
             border-radius: 25px;
             text-decoration: none;
             font-size: 14px;
@@ -220,17 +218,17 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
             border: none;
         }
 
-        .btn-appointment:hover {background: #0056b3;}
+        .btn-appointment:hover { background: #0056b3; }
 
         @media(max-width: 900px){
-            .container {flex-direction: column; gap: 30px;}
+            .product-container { flex-direction: column; gap: 30px; }
         }
     </style>
 </head>
 <body>
 
     <div class="navbar">
-        <div class="navbar-inner">
+        <div class="container navbar-inner">
             <div class="logo">
                 <img src="images/ys aluminium.jpg" alt="YS Aluminium Logo" class="logo-img">
             </div>
@@ -265,7 +263,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
         </div>
     </div>
 
-    <div class="container">
+    <div class="container product-container">
         <div class="product-image">
             <img src="https://d21xn5q7qjmco5.cloudfront.net/images/doortype/thumb1754477466.jpg" alt="Aluminium Sliding Door">
         </div>
@@ -273,29 +271,19 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
         <div class="product-details">
             <h1>Aluminium Sliding Door</h1>
             <p>
-                Smooth sliding system with durable aluminium frame and modern glass design.
-                <br>
-                ? square foot = How much
-                <br>
-                More Details
-                <br>
-                -
-                <br>
-                -
-                <br>
-                -
-                <br>
-                -
-                <br>
-                -
-                <br>
+                Smooth sliding system with durable aluminium frame and modern glass design.<br>
+                ? square foot = How much<br>
+                More Details<br>
+                - Durability focus<br>
+                - Modern aesthetics<br>
+                - High quality glass
             </p>
 
             <label for="glass">Select Glass Type:</label>
             <select id="glass">
                 <option>Float Glass</option>
                 <option>Tempered Glass</option>
-                <option>Lemined Glass</option>
+                <option>Laminated Glass</option>
             </select>
 
             <button class="btn-appointment">Make Appointment</button>
@@ -306,7 +294,8 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
         function toggleModal(show) {
             const modal = document.getElementById('modalOverlay');
             modal.style.display = show ? 'block' : 'none';
-            document.body.style.overflow = show ? 'hidden' : 'auto';
+            // 弹窗开启时禁用滚动，关闭时恢复
+            document.body.style.overflow = show ? 'hidden' : 'scroll';
         }
 
         document.addEventListener('keydown', (e) => {
