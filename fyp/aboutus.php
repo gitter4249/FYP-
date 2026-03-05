@@ -236,7 +236,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
                 <br><br>
                 <h3>Email</h3>
                 <p>We’ll get back to you as soon as possible.</p>
-                <a href="mailto:hengsijun00@gmail.com" class="btn-outline">
+                <a href="mailto:hengsijun00@gmail.com?subject=Inquiry about Aluminium Service" class="btn-outline">
                     Email us
                 </a>
             </div>
@@ -248,7 +248,7 @@ $customer_name = isset($_SESSION['customer_name']) ? $_SESSION['customer_name'] 
                     <p>
                         <a href="https://www.facebook.com/p/Yong-Sheng-Alu-Enterprise-100054700453045/" target="_blank">Facebook</a> |
                         <a href="https://www.instagram.com/ys_aluminium_/" target="_blank">Instagram</a> |
-                        <a href="https://www.xiaohongshu.com/user/profile/..." target="_blank">Xiaohongshu</a>
+                        <a href="https://www.xiaohongshu.com/user/profile/689eae2a000000001901d446?xsec_token=ABVcHPouxTcJElJySDZC16xCY1aAJuTXc_B6hgYm4vdoM%3D&xsec_source=pc_search" target="_blank">Xiaohongshu</a>
                     </p>
                 </div>
                 <br><br>
