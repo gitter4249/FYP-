@@ -276,7 +276,7 @@ $view = $_GET['view'] ?? 'doors';
             <i class="bi bi-bar-chart-steps"></i> Progress
         </a>
 
-        <a href="../homepage.html" style="margin-top: 20px;">
+        <a href="../homepage.php" style="margin-top: 20px;">
             <i class="bi bi-house"></i> Back to Home
         </a>
         <a href="logout.php" class="logout-link">
