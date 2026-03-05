@@ -1,5 +1,6 @@
 <?php
 session_start();
+// 验证管理员登录状态
 if (!isset($_SESSION['admin'])) { header("Location: admin_login.php"); exit; }
 
 include "../includes/db.php"; 
@@ -66,286 +67,241 @@ $view = $_GET['view'] ?? 'doors';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | YS Aluminium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
-        /* --- 全局黑白美化 --- */
         :root {
-            --bg-light: #f8f9fa;
-            --sidebar-bg: #000000; /* 纯黑侧边栏 */
-            --sidebar-text: #ffffff;
-            --text-dark: #000000;
-            --text-muted: #6c757d;
-            --border-color: #dee2e6;
-            --card-bg: #ffffff;
+            --sidebar-bg: #000000;
+            --main-bg: #f8f9fa;
+            --accent-red: #ef4444;
         }
 
         body { 
-            display: flex; 
-            min-height: 100vh; 
-            background-color: var(--bg-light); 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 更具现代感的字体 */
-            margin: 0; 
-            color: var(--text-dark);
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--main-bg); 
+            margin: 0;
+            color: #1e293b;
         }
 
-        /* --- 侧边栏美化 --- */
-        .sidebar { 
-            width: 260px; 
-            background-color: var(--sidebar-bg); 
-            color: var(--sidebar-text); 
-            position: fixed; 
-            height: 100vh; 
-            padding: 25px; 
+        /* --- 侧边栏 (与截图完全匹配) --- */
+        .sidebar {
+            height: 100vh;
+            width: 260px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            color: white;
+            z-index: 1000;
             display: flex;
             flex-direction: column;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
 
-        /* Logo 区域调整 */
-        .sidebar-logo-area {
+        .sidebar-brand {
+            padding: 25px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px; /* 图片和文字的间距 */
-            margin-bottom: 40px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1); /* 添加一条细黑线装饰 */
+            gap: 12px;
         }
 
-        .logo-img {
-            width: 35px; /* 图标大小 */
-            height: 35px;
-            border-radius: 6px; /* 稍微圆角 */
-            object-fit: cover;
-            background-color: #fff; /* 如果图片是透明的，加个白底 */
-            padding: 2px;
+        .sidebar-brand img {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 8px;
+            padding: 3px;
+            object-fit: contain;
         }
 
-        .sidebar h4 {
-            margin: 0;
+        .sidebar-brand span {
             font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase; /* 大写显专业 */
             font-size: 1.1rem;
-        }
-
-        .nav-menu {
-            flex-grow: 1;
-        }
-
-        .nav-link-custom { 
-            display: flex; 
-            align-items: center; 
-            color: rgba(255,255,255,0.7); /* 非活动状态稍微变灰 */
-            text-decoration: none; 
-            padding: 12px 15px; 
-            border-radius: 8px; 
-            margin-bottom: 8px; 
-            transition: all 0.3s ease; 
-            font-size: 0.95rem;
-        }
-
-        .nav-link-custom i {
-            font-size: 1.1rem;
-            margin-right: 12px;
-        }
-
-        /* 活动/悬停状态：白底黑字 */
-        .nav-link-custom:hover, .nav-link-custom.active { 
-            background-color: #ffffff; 
-            color: #000000; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .sidebar hr {
-            border-color: rgba(255,255,255,0.1);
-            margin: 20px 0;
-        }
-
-        .text-danger-custom {
-            color: #ff6b6b !important; /* 稍微柔和一点的红色 */
-        }
-        .nav-link-custom.text-danger-custom:hover {
-            background-color: #ff6b6b;
-            color: #fff !important;
-        }
-
-        /* --- 主内容区美化 --- */
-        .main-content { 
-            flex: 1; 
-            margin-left: 260px; 
-            padding: 40px; 
-        }
-
-        .card-custom { 
-            background-color: var(--card-bg); 
-            border-radius: 12px; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
-            padding: 30px; 
-            border: 1px solid var(--border-color);
-        }
-
-        h4.fw-bold {
-            color: var(--text-dark);
-            letter-spacing: -0.5px;
-        }
-
-        /* --- 表格黑白美化 --- */
-        .table {
-            border-color: var(--border-color);
-        }
-
-        .table-light {
-            --bs-table-bg: #f1f3f5;
-            --bs-table-border-color: var(--border-color);
-            color: var(--text-dark);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
             letter-spacing: 0.5px;
         }
 
-        .table-hover tbody tr:hover {
-            background-color: rgba(0,0,0,0.02);
+        .nav-section-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #64748b;
+            padding: 20px 25px 8px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
         }
 
-        .table-responsive {
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .table td, .table th {
-            padding: 15px;
-        }
-
-        /* --- 按钮黑白美化 --- */
-        .btn {
-            border-radius: 6px;
-            font-weight: 600;
+        .nav-menu a {
+            padding: 12px 25px;
+            text-decoration: none;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
             font-size: 0.9rem;
-            padding: 8px 16px;
             transition: all 0.2s;
+            margin: 2px 15px;
+            border-radius: 8px;
         }
 
-        /* 主按钮：全黑 */
-        .btn-primary {
-            background-color: #000;
-            border-color: #000;
-            color: #fff;
-        }
-        .btn-primary:hover, .btn-primary:focus {
-            background-color: #333;
-            border-color: #333;
-            color: #fff;
+        .nav-menu a i {
+            font-size: 1.2rem;
+            margin-right: 12px;
         }
 
-        /* 成功按钮（注册）：深灰 */
-        .btn-success {
-            background-color: #495057;
-            border-color: #495057;
-            color: #fff;
-        }
-        .btn-success:hover {
-            background-color: #343a40;
-            border-color: #343a40;
+        .nav-menu a:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* 删除按钮：描边红，悬停实心红 */
-        .btn-outline-danger {
-            color: #dc3545;
-            border-color: #dc3545;
-        }
-        .btn-outline-danger:hover {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        /* --- 其他组件 --- */
-        .badge.bg-info {
-            background-color: #e9ecef !important; /* 浅灰背景 */
-            color: #495057 !important; /* 深灰文字 */
+        .nav-menu a.active {
+            background-color: white;
+            color: black;
             font-weight: 600;
-            border: 1px solid #dee2e6;
+        }
+
+        .logout-link {
+            margin-top: auto;
+            margin-bottom: 25px !important;
+            color: var(--accent-red) !important;
+        }
+
+        .logout-link:hover {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* --- 主内容区 --- */
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+        }
+
+        .welcome-header {
+            margin-bottom: 30px;
+        }
+
+        .welcome-header h3 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        /* --- 表格卡片样式 --- */
+        .card-custom {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 15px 25px;
+            border: none;
+        }
+
+        .table tbody td {
+            padding: 18px 25px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
         }
 
         code {
-            background-color: #f1f3f5;
-            color: #e03131;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.9em;
+            background-color: #fff1f2;
+            color: #e11d48;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: inherit;
+            font-weight: 500;
         }
 
-        /* --- Modal 美化 --- */
-        .modal-content {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--bg-light);
-            border-radius: 12px 12px 0 0;
-        }
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-        }
-        .form-label {
-            color: #495057;
-        }
-        .form-control, .form-select {
+        .btn-delete {
+            color: #ef4444;
+            background: #fff;
+            border: 1px solid #fee2e2;
+            padding: 6px 10px;
             border-radius: 6px;
-            border-color: var(--border-color);
-            padding: 10px 15px;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: #000;
-            box-shadow: 0 0 0 0.2rem rgba(0,0,0,0.125);
+            transition: 0.3s;
         }
 
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-logo-area">
-        <img src="../images/ys aluminium.jpg "alt="YS Logo" class="logo-img">
-        <h4 class="font-color=white; text-center" >YS Aluminium</h4>
+    <div class="sidebar-brand">
+        <img src="../images/ys aluminium.jpg" alt="Logo">
+        <span>YS ALUMINIUM</span>
     </div>
     
     <nav class="nav-menu">
-        <a href="admin_dashboard.php?view=doors" class="nav-link-custom <?= $view == 'doors' ? 'active' : '' ?>">
+        <div class="nav-section-title">Administration</div>
+        <a href="admin_dashboard.php?view=doors" class="<?= $view == 'doors' ? 'active' : '' ?>">
             <i class="bi bi-door-open"></i> Door Inventory
         </a>
-        <a href="admin_dashboard.php?view=staff" class="nav-link-custom <?= $view == 'staff' ? 'active' : '' ?>">
+        <a href="admin_dashboard.php?view=staff" class="<?= $view == 'staff' ? 'active' : '' ?>">
             <i class="bi bi-people"></i> Staff Management
         </a>
-        <a href="../homepage.html" class="nav-link-custom">
+
+        <div class="nav-section-title">Business Overview</div>
+        <a href="#" style="opacity: 0.6; cursor: not-allowed;">
+            <i class="bi bi-calendar-check"></i> Appointment
+        </a>
+        <a href="#" style="opacity: 0.6; cursor: not-allowed;">
+            <i class="bi bi-file-earmark-text"></i> Quotation
+        </a>
+        <a href="#" style="opacity: 0.6; cursor: not-allowed;">
+            <i class="bi bi-receipt"></i> Invoice / Purchase
+        </a>
+        <a href="#" style="opacity: 0.6; cursor: not-allowed;">
+            <i class="bi bi-credit-card"></i> Payment
+        </a>
+        <a href="#" style="opacity: 0.6; cursor: not-allowed;">
+            <i class="bi bi-bar-chart-steps"></i> Progress
+        </a>
+
+        <a href="../homepage.html" style="margin-top: 20px;">
             <i class="bi bi-house"></i> Back to Home
         </a>
-        <hr>
-        <a href="logout.php" class="nav-link-custom text-danger-custom">
+        <a href="logout.php" class="logout-link">
             <i class="bi bi-box-arrow-left"></i> Logout
         </a>
     </nav>
 </div>
 
 <div class="main-content">
+    <div class="welcome-header">
+        <h3>Welcome, Admin</h3>
+        <p class="text-muted small">Manage your inventory and staff accounts from this central panel.</p>
+    </div>
+
     <div class="card-custom">
-        
         <?php if($view == 'doors'): ?>
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold">Door Product Management</h4>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDoorModal">
+            <div class="card-header-custom">
+                <h5 class="mb-0 fw-bold">Door Product Management</h5>
+                <button class="btn btn-dark btn-sm px-3" data-bs-toggle="modal" data-bs-target="#addDoorModal">
                     <i class="bi bi-plus-lg me-1"></i> Add New Door
                 </button>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr><th>Brand</th><th>Material</th><th>Design</th><th>Dimensions</th><th>Price</th><th class="text-end">Actions</th></tr>
                     </thead>
                     <tbody>
@@ -359,7 +315,9 @@ $view = $_GET['view'] ?? 'doors';
                             <td><code><?= htmlspecialchars($d['dimensions']) ?></code></td>
                             <td class="fw-bold">RM <?= number_format($d['price'], 2) ?></td>
                             <td class="text-end">
-                                <a href="?delete_door=<?= $d['id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?')"><i class="bi bi-trash"></i></a>
+                                <a href="?delete_door=<?= $d['id'] ?>" class="btn-delete" onclick="return confirm('Delete this product?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
                             </td>
                         </tr>
                         <?php endwhile; ?>
@@ -368,15 +326,15 @@ $view = $_GET['view'] ?? 'doors';
             </div>
 
         <?php elseif($view == 'staff'): ?>
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold">Staff Management</h4>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#regStaffModal">
+            <div class="card-header-custom">
+                <h5 class="mb-0 fw-bold">Staff Account Management</h5>
+                <button class="btn btn-dark btn-sm px-3" data-bs-toggle="modal" data-bs-target="#regStaffModal">
                     <i class="bi bi-person-plus me-1"></i> Register New Staff
                 </button>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr><th>Staff ID</th><th>Name</th><th>Role</th><th class="text-end">Actions</th></tr>
                     </thead>
                     <tbody>
@@ -386,9 +344,9 @@ $view = $_GET['view'] ?? 'doors';
                         <tr>
                             <td><code><?= htmlspecialchars($s['staff_id']) ?></code></td>
                             <td class="fw-bold"><?= htmlspecialchars($s['staff_name']) ?></td>
-                            <td><span class="badge bg-info">Staff</span></td>
+                            <td><span class="badge bg-light text-dark border">Staff</span></td>
                             <td class="text-end">
-                                <a href="?view=staff&delete_staff=<?= $s['id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to remove this staff account?')">
+                                <a href="?view=staff&delete_staff=<?= $s['id'] ?>" class="btn-delete" onclick="return confirm('Remove this staff account?')">
                                     <i class="bi bi-person-x"></i>
                                 </a>
                             </td>
@@ -398,34 +356,33 @@ $view = $_GET['view'] ?? 'doors';
                 </table>
             </div>
         <?php endif; ?>
-
     </div>
 </div>
 
 <div class="modal fade" id="regStaffModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <form method="POST" class="modal-content">
-            <div class="modal-header">
+        <form method="POST" class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
                 <h5 class="modal-title fw-bold">Register Staff Account</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Staff ID (Username)</label>
-                    <input type="text" name="staff_id" class="form-control" placeholder="e.g. staff_001" required>
+                    <input type="text" name="staff_id" class="form-control bg-light border-0" placeholder="e.g. staff_001" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Full Name</label>
-                    <input type="text" name="staff_name" class="form-control" placeholder="Enter staff full name" required>
+                    <input type="text" name="staff_name" class="form-control bg-light border-0" placeholder="Enter staff full name" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Initial Password</label>
-                    <input type="password" name="password" class="form-control" placeholder="Minimum 6 characters" required>
+                    <input type="password" name="password" class="form-control bg-light border-0" placeholder="Minimum 6 characters" required>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" name="reg_staff" class="btn btn-success">Create Staff Account</button>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" name="reg_staff" class="btn btn-dark px-4">Create Account</button>
             </div>
         </form>
     </div>
@@ -433,51 +390,46 @@ $view = $_GET['view'] ?? 'doors';
 
 <div class="modal fade" id="addDoorModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form method="POST" class="modal-content">
-            <div class="modal-header">
+        <form method="POST" class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
                 <h5 class="modal-title fw-bold">Add New Door Product</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
                         <label class="form-label small fw-bold">Door Brand/Model</label>
-                        <input type="text" name="door_brand" class="form-control" placeholder="e.g. Premium Sliding A1" required>
+                        <input type="text" name="door_brand" class="form-control bg-light border-0" required>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
                         <label class="form-label small fw-bold">Material</label>
-                        <select name="material" class="form-select" required>
-                            <option value="" selected disabled>Select Material</option>
+                        <select name="material" class="form-select bg-light border-0" required>
                             <option value="Aluminum">Aluminum</option>
                             <option value="Aluminum + Glass">Aluminum + Glass</option>
                             <option value="Wood + Glass">Wood + Glass</option>
                         </select>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
                         <label class="form-label small fw-bold">Design Type</label>
-                        <input type="text" name="design_type" class="form-control" placeholder="e.g. Modern, Minimalist" required>
+                        <input type="text" name="design_type" class="form-control bg-light border-0" placeholder="e.g. Modern" required>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label small fw-bold">Dimensions (W x H)</label>
-                        <input type="text" name="dimensions" class="form-control" placeholder="e.g. 900mm x 2100mm" required>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Dimensions</label>
+                        <input type="text" name="dimensions" class="form-control bg-light border-0" placeholder="900mm x 2100mm" required>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label small fw-bold">Stock In Date</label>
-                        <input type="date" name="stock_date" class="form-control" value="<?= date('Y-m-d') ?>" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
                         <label class="form-label small fw-bold">Unit Price (RM)</label>
-                        <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
+                        <input type="number" step="0.01" name="price" class="form-control bg-light border-0" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Stock In Date</label>
+                        <input type="date" name="stock_date" class="form-control bg-light border-0" value="<?= date('Y-m-d') ?>" required>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" name="add_door" class="btn btn-primary">Add Door Product</button>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" name="add_door" class="btn btn-dark px-4">Add Product</button>
             </div>
         </form>
     </div>

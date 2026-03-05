@@ -3,13 +3,13 @@ session_start();
 // --- 关键点 1: 引入数据库连接 ---
 require '../includes/db.php'; 
 
-// 安全检查：如果未登录，重定向回登录页面
-if (!isset($_SESSION['staff_logged_in']) || $_SESSION['staff_logged_in'] !== true) {
+// 安全检查：修正 Session 变量名以匹配你的登录逻辑
+if (!isset($_SESSION['staff_id'])) {
     header("Location: login.php"); 
     exit;
 }
 
-// 获取会话中的员工姓名
+// 获取会话中的员工信息
 $staff_name = $_SESSION['staff_name'] ?? "Staff Member";
 ?>
 
@@ -18,7 +18,7 @@ $staff_name = $_SESSION['staff_name'] ?? "Staff Member";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Portal | Customer Management</title>
+    <title>Staff Portal | YS Aluminium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -46,6 +46,7 @@ $staff_name = $_SESSION['staff_name'] ?? "Staff Member";
             color: white;
             padding-top: 20px;
             z-index: 1000;
+            overflow-y: auto; /* 菜单多时可以滚动 */
         }
 
         .sidebar-brand {
@@ -70,14 +71,14 @@ $staff_name = $_SESSION['staff_name'] ?? "Staff Member";
         }
 
         .sidebar a {
-            padding: 14px 25px;
+            padding: 12px 25px;
             text-decoration: none;
             color: #94a3b8;
             display: flex;
             align-items: center;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
-            margin: 4px 15px;
+            margin: 2px 15px;
             border-radius: 8px;
         }
 
@@ -98,9 +99,8 @@ $staff_name = $_SESSION['staff_name'] ?? "Staff Member";
         }
 
         .sidebar .logout-link {
-            position: absolute;
-            bottom: 30px;
-            width: calc(100% - 30px);
+            margin-top: 20px;
+            margin-bottom: 30px;
             color: #ef4444;
         }
 
@@ -222,6 +222,26 @@ $staff_name = $_SESSION['staff_name'] ?? "Staff Member";
 
     <a href="staff_dashboard.php" class="active">
         <i class="bi bi-people"></i> Customer Management
+    </a>
+    
+    <a href="appointment.php">
+        <i class="bi bi-calendar-check"></i> Appointment
+    </a>
+
+    <a href="quotation.php">
+        <i class="bi bi-file-earmark-text"></i> Quotation
+    </a>
+
+    <a href="invoice_purchase.php">
+        <i class="bi bi-receipt"></i> Invoice / Purchase
+    </a>
+
+    <a href="payment.php">
+        <i class="bi bi-credit-card"></i> Payment
+    </a>
+
+    <a href="progress.php">
+        <i class="bi bi-bar-chart-steps"></i> Progress
     </a>
 
     <a href="logout.php" class="logout-link">
