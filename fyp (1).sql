@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2026 at 02:55 PM
+-- Generation Time: Mar 12, 2026 at 03:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -50,12 +50,14 @@ INSERT INTO `admins` (`id`, `username`, `password`, `full_name`, `last_login`) V
 --
 
 CREATE TABLE `appointments` (
-  `appt_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `customer_id` int(11) NOT NULL,
-  `product_id` int(11) DEFAULT NULL,
-  `appt_date` date NOT NULL,
-  `appt_time` time NOT NULL,
-  `status` enum('Pending','Confirmed','Cancelled') DEFAULT 'Pending'
+  `staff_id` int(11) DEFAULT NULL,
+  `appointment_date` date NOT NULL,
+  `appointment_time` time NOT NULL,
+  `service_type` varchar(255) NOT NULL,
+  `status` enum('Pending','Confirmed','Completed','Cancelled') DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -65,22 +67,22 @@ CREATE TABLE `appointments` (
 --
 
 CREATE TABLE `customers` (
-  `customer_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `address` text DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`customer_id`, `name`, `email`, `phone`, `address`, `password`, `created_at`) VALUES
-(1, 'John Doe', 'test@example.com', NULL, NULL, '$2y$10$l9ZhcjpQz8MoqCAe5.B2Bu6tlC86IqktQlbJsd8E4aT1ViCmbudQe', '2026-03-04 16:37:55'),
-(2, 'hengping', 'sim.heng.ping@student.mmu.edu.my', NULL, NULL, '$2y$10$jie7RSie00eblw6iwujTSeior8hb.tZYZNop3LymAFj6oozGu6l86', '2026-03-04 18:57:53');
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `password`, `created_at`, `status`) VALUES
+(1, 'hengjing sim', 'hengjingchen102@gmail.com', '0137787266', '$2y$10$h0Zt3TDERMy31TiDQIVW0OoilmGsqHr999QqZrt1Bd7JFqivIimSu', '2026-03-05 02:31:50', 1),
+(21, 'wenjia', 'wenjia@gmail.com', '0123456789', '$2y$10$JIJP91LK0gnyBMRT6H/EquvMAFyUhU7EWTrFMzAwYA2gRvOl6VNIu', '2026-03-11 05:24:39', 1);
 
 -- --------------------------------------------------------
 
@@ -96,15 +98,16 @@ CREATE TABLE `doors` (
   `stock_date` date DEFAULT NULL,
   `dimensions` varchar(50) DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
-  `status` int(11) DEFAULT 1
+  `status` int(11) DEFAULT 1,
+  `image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `doors`
 --
 
-INSERT INTO `doors` (`id`, `door_brand`, `material`, `design_type`, `stock_date`, `dimensions`, `price`, `status`) VALUES
-(1, 'example', 'Aluminum', 'modern', '2026-03-04', '123123', 1000.00, 1);
+INSERT INTO `doors` (`id`, `door_brand`, `material`, `design_type`, `stock_date`, `dimensions`, `price`, `status`, `image`) VALUES
+(9, 'example', 'Aluminum', 'Swing Door', '2026-03-12', '234234', 99999999.99, 1, '1773326826_Image_20260310131907.jpg');
 
 -- --------------------------------------------------------
 
@@ -132,16 +135,18 @@ CREATE TABLE `staff` (
   `staff_id` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `staff_name` varchar(100) DEFAULT NULL,
-  `role` varchar(50) DEFAULT 'Staff'
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `role` varchar(50) DEFAULT 'Staff',
+  `status` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `staff`
 --
 
-INSERT INTO `staff` (`id`, `staff_id`, `password`, `staff_name`, `role`) VALUES
-(2, 'hengjing', '$2y$10$zBARZ9MRmE.Up5FBW3dKRuWwnkNtnEdGoWlguu4aYblN4IwZRlAvO', 'hengjing', 'Staff'),
-(3, 'hengping', '$2y$10$aJ/ORDkBv3LDvXafegboF.zeFP9TOpn1TUOMFYS8NKu0ZfI/RCc52', 'hengping', 'Staff');
+INSERT INTO `staff` (`id`, `staff_id`, `password`, `staff_name`, `email`, `phone`, `role`, `status`) VALUES
+(3, 'wenji', '$2y$10$oyqCJYWRenyqxgYjxpdkHu.rYxXCLddu9WMNEw6C5PlD7.nVqPoty', 'wenji', 'wenjia@gmail.com', '1111111111', 'Staff', 1);
 
 --
 -- Indexes for dumped tables
@@ -158,14 +163,14 @@ ALTER TABLE `admins`
 -- Indexes for table `appointments`
 --
 ALTER TABLE `appointments`
-  ADD PRIMARY KEY (`appt_id`),
-  ADD KEY `fk_cust_appt` (`customer_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `customer_id` (`customer_id`);
 
 --
 -- Indexes for table `customers`
 --
 ALTER TABLE `customers`
-  ADD PRIMARY KEY (`customer_id`),
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
@@ -202,19 +207,19 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appt_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `doors`
 --
 ALTER TABLE `doors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `quotations`
@@ -236,13 +241,7 @@ ALTER TABLE `staff`
 -- Constraints for table `appointments`
 --
 ALTER TABLE `appointments`
-  ADD CONSTRAINT `fk_cust_appt` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE;
-
---
--- Constraints for table `quotations`
---
-ALTER TABLE `quotations`
-  ADD CONSTRAINT `fk_cust_qtn` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
