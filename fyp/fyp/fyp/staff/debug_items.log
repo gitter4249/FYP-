@@ -1,0 +1,26 @@
+Array
+(
+    [product_id] => 15
+    [quantity] => 1
+    [unit_price] => 700
+    [discount] => 0.00
+    [details] => Array
+        (
+            [0] => 3'0'' x 7'0''(H)
+        )
+
+    [detail] => 3'0'' x 7'0''(H)
+)
+Array
+(
+    [product_id] => 15
+    [quantity] => 1
+    [unit_price] => 700
+    [discount] => 0.00
+    [details] => Array
+        (
+            [0] => 3'0'' x 7'0''(H)
+        )
+
+    [detail] => 3'0'' x 7'0''(H)
+)
