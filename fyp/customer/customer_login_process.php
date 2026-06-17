@@ -1,64 +1,112 @@
 <?php
-// 1. 启动 Session
 session_start();
-
-// 2. 引入数据库连接文件 (请确保路径正确)
-require '../includes/db.php';
+require '../includes/db.php'; 
+require 'send_email.php';
 
 if (isset($_POST['submit_login'])) {
-    // 接收并转义输入，防止基本的 SQL 注入（虽然用了预处理，但这仍是好习惯）
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
-    // 3. 使用预处理语句查询用户
-    $sql = "SELECT * FROM customers WHERE email = ?";
+    $sql = "SELECT * FROM customers WHERE LOWER(email) = LOWER(?)";
     $stmt = mysqli_prepare($conn, $sql);
-    
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "s", $email);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
 
-        if ($row = mysqli_fetch_assoc($result)) {
-            // 4. 验证密码
-            // 注意：如果你的数据库存的是明文，请用 ($password == $row['password'])
-            // 如果是加密过的，请保持 password_verify
-            if (password_verify($password, $row['password']) || $password == $row['password']) {
-                
-                // --- 状态检查 ---
-                if ($row['status'] !== 'active') {
-                    header("Location: customer_login.php?error=Your account is inactive. Please contact staff.");
+        if ($row) {
+            if (password_verify($password, $row['password'])) {
+                if ((int)$row['status'] !== 1) {
+                    header("Location: customer_login.php?error=Account is deactivated.");
                     exit;
                 }
 
-                // 5. 关键修复：统一 Session 键名
-                // 我们统一使用 'customer_id' 和 'name'，方便后面 Dashboard 调用
                 $_SESSION['customer_id'] = $row['customer_id'];
-                $_SESSION['name'] = $row['name']; 
-                $_SESSION['email'] = $row['email'];
-                
-                // 登录成功，跳转到仪表盘
+                $_SESSION['customer_name'] = $row['name'];
+
                 header("Location: customer_dashboard.php");
                 exit;
-
             } else {
-                // 密码错误
-                header("Location: customer_login.php?error=Invalid email or password.");
+                header("Location: customer_login.php?error=Incorrect password.");
                 exit;
             }
         } else {
-            // 邮箱不存在
-            header("Location: customer_login.php?error=Invalid email or password.");
+            header("Location: customer_login.php?error=No account found.");
             exit;
         }
     } else {
-        // 数据库语句错误
-        header("Location: customer_login.php?error=System error. Please try again later.");
+        die("Database error: " . mysqli_error($conn));
+    }
+
+} elseif (isset($_POST['submit_reset'])) {
+    $reset_email = trim($_POST['reset_email']);
+
+    $check_sql = "SELECT customer_id, name FROM customers WHERE LOWER(email) = LOWER(?) AND status = 1";
+    $stmt = mysqli_prepare($conn, $check_sql);
+    mysqli_stmt_bind_param($stmt, "s", $reset_email);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($res);
+
+    if ($user) {
+        $cust_id = $user['customer_id'];
+        $cust_name = $user['name'];
+
+        function generateRandomPassword($length = 8) {
+            $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            $password = '';
+            for ($i = 0; $i < $length; $i++) {
+                $password .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $password;
+        }
+        $new_password = generateRandomPassword(8);
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+        $update_sql = "UPDATE customers SET password = ? WHERE customer_id = ?";
+        $update_stmt = mysqli_prepare($conn, $update_sql);
+        mysqli_stmt_bind_param($update_stmt, "si", $hashed_password, $cust_id);
+        
+        if (mysqli_stmt_execute($update_stmt)) {
+            if (mysqli_stmt_affected_rows($update_stmt) > 0) {
+                $subject = "Your Password Has Been Reset - YS Aluminium";
+                $body = "
+                    <html>
+                    <head><meta charset='UTF-8'></head>
+                    <body>
+                        <h2>Hello $cust_name,</h2>
+                        <p>We received a request to reset your password.</p>
+                        <p>Your new password is: <strong>$new_password</strong></p>
+                        <p>Please login and change it immediately.</p>
+                        <p>If you did not request this, please contact support.</p>
+                        <p>Thank you,<br>YS Aluminium Team</p>
+                        <hr style='margin: 30px 0; border: none; border-top: 1px solid #eee;'>
+                        <p style='color: #555; font-size: 0.9rem;'>If you have any questions, please contact us:</p>
+                        <p style='color: #555; font-size: 0.9rem;'><strong>Phone:</strong> +60 18-366 5756<br><strong>Email:</strong> yongshengalu@gmail.com</p>
+                        <p style='color: #777; font-size: 0.8rem;'>YS Aluminium Team</p>
+                        </div>
+                    </body>
+                    </html>
+                ";
+                $altBody = "Hello $cust_name,\n\nYour new password is: $new_password\n\nPlease login and change it immediately.\n\nYS Aluminium Team";
+                sendYSAluminiumEmail($reset_email, $cust_name, $subject, $body, $altBody);
+
+                header("Location: customer_login.php?success=Your password has been reset. Please check your email (including spam folder).");
+                exit;
+            } else {
+                header("Location: customer_login.php?error=Password reset failed (no changes).");
+                exit;
+            }
+        } else {
+            header("Location: customer_login.php?error=Database error: " . urlencode(mysqli_error($conn)));
+            exit;
+        }
+    } else {
+        header("Location: customer_login.php?error=Email not found or account inactive.");
         exit;
     }
-} else {
-    // 如果不是通过 POST 提交访问的，退回登录页
-    header("Location: customer_login.php");
-    exit;
 }
+
+mysqli_close($conn);
 ?>
