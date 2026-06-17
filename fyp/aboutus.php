@@ -1,275 +1,193 @@
-<?php 
-session_start(); 
-// 获取 Session 中的客户姓名
-$name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
+<?php  
+include('includes/header.php'); 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>About Us - YS Aluminium</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+<style>
+.banner{
+    background:#3f3f3f;
+    color:white;
+    text-align:center;
+    padding:40px 0;
+    font-size:28px;
+    font-weight:bold;
+    letter-spacing:2px;
+}
 
-        body {
-            background: #f6f6f6;
-        }
+.about{
+    padding:70px 0;
+    background:#f6f6f6;
+    border-bottom:1px solid #e5e5e5;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+.about-grid{
+    display:flex;
+    gap:80px;
+    flex-wrap:wrap;
+}
 
-        /* ================= NAVBAR (参考 Homepage 样式) ================= */
-        .navbar {
-            background: white;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
+.about-left,
+.about-right{
+    flex:1;
+    min-width:280px;
+    text-align:justify;
+}
 
-        .navbar-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
+.about-left p{
+    line-height:1.8;
+    margin-bottom:15px;
+}
 
-        .logo-img {
-            width: 140px;
-            height: auto;
-            object-fit: contain;
-            transition: 0.3s;
-        }
+.about-right img{
+    width:100%;
+    max-width:350px;       
+    aspect-ratio:1/1;       
+    object-fit:cover;       
+    display:block;
+    margin:0 auto;          
+    border-radius:10px;
+}
 
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
+.why-us{
+    padding:100px 0;
+    background:#e5ddcf;
+    text-align:center;
+}
 
-        .nav-links a {
-            text-decoration: none;
-            color: black;
-            font-size: 14px;
-            position: relative;
-            padding-bottom: 5px;
-            transition: 0.3s;
-        }
+.why-title{
+    font-size:36px;
+    margin-bottom:20px;
+    color:#000000;
+}
 
-        .nav-links a.active::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            height: 2px;
-            background: black;
-        }
+.why-subtitle{
+    margin-bottom:60px;
+    font-size:15px;
+    color:#000000;
+}
 
-        /* 登录后的用户区域样式 */
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+.why-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:30px;
+}
 
-        .username-text {
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
+.why-box{
+    background:white;
+    padding:50px 30px;
+    border-radius:16px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    transition:0.35s;
+    position:relative;
+    overflow:hidden;
+}
 
-        .account-btn {
-            color: #555 !important;
-            border: 1px solid #ddd;
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-size: 12px !important;
-        }
+.why-box:hover{
+    transform:translateY(-10px);
+    box-shadow:0 20px 40px rgba(0,0,0,0.12);
+}
 
-        .account-btn:hover {
-            background: #f9f9f9;
-            border-color: #999;
-        }
+.why-box::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:0%;
+    height:4px;
+    background:#b8860b;
+    transition:0.3s;
+}
 
-        .logout-link {
-            color: #ff4d4d !important;
-            font-size: 12px !important;
-            margin-left: 5px;
-        }
+.why-box:hover::before{
+    width:100%;
+}
 
-        /* 登录按钮样式 */
-        .nav-login-btn {
-            background: black;
-            color: white !important;
-            padding: 8px 18px;
-            border-radius: 25px;
-            transition: 0.3s;
-            cursor: pointer;
-        }
+.icon-circle{
+    width:70px;
+    height:70px;
+    background:#f3f3f3;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 20px;
+    transition:0.3s;
+}
 
-        .nav-login-btn:hover {
-            background: #8d8a8a;
-        }
+.why-box:hover .icon-circle{
+    background:#b8860b;
+}
 
-        /* ================= LOGIN MODAL ================= */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 2000;
-            backdrop-filter: blur(5px);
-        }
+.icon-circle img{
+    width:32px;
+    transition:0.3s;
+}
 
-        .login-modal {
-            position: fixed;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: white; padding: 40px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            width: 90%; max-width: 400px; text-align: center;
-        }
+.why-box:hover .icon-circle img{
+    filter:brightness(0) invert(1);
+}
 
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999; }
-        .modal-btn-group { display: flex; flex-direction: column; gap: 15px; margin-top: 25px; }
-        .modal-btn { padding: 15px; border-radius: 12px; text-decoration: none; font-size: 16px; font-weight: bold; transition: 0.3s; border: 1px solid #eee; color: black; }
-        .modal-btn:hover { background: #f6f6f6; border-color: black; }
-        .btn-admin { background: #1e293b; color: white; border: none; }
-        .btn-admin:hover { background: #334155; }
+.why-box h4{
+    font-size:18px;
+    color:#222;
+    margin-bottom:12px;
+    letter-spacing:1px;
+}
 
-        /* ================= ABOUT & CONTACT (保留你的原始内容样式) ================= */
-        .about { padding: 100px 0 50px 0; }
-        .about h1 { font-size: 42px; margin-bottom: 30px; }
-        .about p { line-height: 1.8; color: #555; margin-bottom: 20px; max-width: 800px; }
-        .contact { padding: 50px 0 100px 0; border-top: 1px solid #ddd; }
-        .contact h2 { font-size: 36px; margin-bottom: 50px; }
-        .contact-grid { display: flex; justify-content: space-between; gap: 80px; }
-        .contact-left, .contact-right { flex: 1; }
-        .contact h3 { font-size: 18px; margin-bottom: 15px; }
-        .contact p { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 15px; }
-        .btn-outline { display: inline-block; padding: 10px 22px; border: 1px solid black; border-radius: 25px; text-decoration: none; color: black; font-size: 13px; margin-top: 5px; margin-bottom: 5px; transition: 0.3s; }
-        .btn-outline:hover { background: black; color: white; }
-        .social-links a { color: black; text-decoration: none; font-size: 14px; }
-        .social-links a:hover { text-decoration: underline; }
+.why-box p{
+    font-size:14px;
+    color:#666;
+    line-height:1.7;
+}
 
-        @media(max-width:900px) {
-            .contact-grid { flex-direction: column; gap: 40px; }
-        }
-    </style>
-</head>
+@media(max-width:900px){
+    .why-grid{ grid-template-columns:1fr; }
+}
+</style>
+
+<?php include('includes/chatbot.php'); ?>
+<?php include('includes/slide.php'); ?>
 
 <body>
 
-    <div class="navbar">
-        <div class="container navbar-inner">
-            <div class="logo">
-                <img src="images/ys aluminium.jpg" alt="YS Aluminium Logo" class="logo-img">
+<div class="banner">ABOUT US</div>
+
+<div class="container about">
+    <div class="about-grid">
+        <div class="about-left">
+            <p><b>Yong Sheng Alu Enterprise</b> specializes in the supply and installation of high-quality aluminium and glass products. We provide a wide range of services including aluminium doors, windows, cabinets, sliding doors, tempered glass, shower glass, and more. With a focus on quality workmanship and customer satisfaction, we ensure every project is completed with precision and care. Feel free to contact us for reliable and affordable solutions for your home or business.</p>
+            <p>Based in Johor, Malaysia, we specialize in premium-quality glass doors and aluminium cabinets. With years of experience, we have built a strong reputation, with most of our projects coming from satisfied customer recommendations. Get in touch with us today for reliable and professional solutions.</p>
+        </div>
+        <div class="about-right">
+            <img src="images/aboutus.jpg">
+        </div>
+    </div>
+</div>
+
+<section class="why-us">
+    <div class="container">
+        <h2 class="why-title">Why Choose Us</h2>
+        <p class="why-subtitle">We deliver quality, trust and professional workmanship</p>
+        <div class="why-grid">
+            <div class="why-box">
+                <div class="icon-circle"><img src="images/1.png"></div>
+                <h4>Expertise & Experience</h4>
+                <p>With years of experience in Johor, We delivers professional installation of high-quality aluminium and glass products, including doors, windows, cabinets, and shower glass.</p>
             </div>
-
-            <div class="nav-links">
-                <a href="homepage.php">Home</a>
-                <a href="aboutus.php" class="active">About Us</a>
-                <a href="product.php">Products</a>
-
-                <?php if ($name): ?>
-                    <div class="user-section">
-                        <span class="username-text">Hi, <?php echo htmlspecialchars($name); ?></span>
-                        <a href="customer/customer_dashboard.php" class="account-btn">Account Details</a>
-                        <a href="customer/logout.php" class="logout-link">Logout</a>
-                    </div>
-                <?php else: ?>
-                    <a href="javascript:void(0)" class="nav-login-btn" onclick="toggleModal(true)">Login</a>
-                <?php endif; ?>
+            <div class="why-box">
+                <div class="icon-circle"><img src="images/2.png"></div>
+                <h4>Quality & Precision</h4>
+                <p>We prioritize superior workmanship and attention to detail, ensuring every project is completed with precision and durability.</p>
+            </div>
+            <div class="why-box">
+                <div class="icon-circle"><img src="images/3.png"></div>
+                <h4>Trusted by Customers</h4>
+                <p>Most of our projects come from satisfied customer recommendations, reflecting our commitment to reliability, affordability, and excellent service.</p>
             </div>
         </div>
     </div>
+</section>
 
-    <div class="modal-overlay" id="modalOverlay" onclick="toggleModal(false)">
-        <div class="login-modal" onclick="event.stopPropagation()">
-            <span class="close-modal" onclick="toggleModal(false)">&times;</span>
-            <h3>Login As</h3>
-            <div class="modal-btn-group">
-                <a href="customer/customer_login.php" class="modal-btn">Customer</a>
-                <a href="staff/login.php" class="modal-btn">Staff</a>
-                <a href="admin/admin_login.php" class="modal-btn btn-admin">Admin</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container about">
-        <h1>About YS Aluminium</h1>
-        <p>
-            YS Aluminium is a professional aluminium and glass specialist 
-            providing high-quality installation services for residential 
-            and commercial projects. With years of industry experience, 
-            we focus on precision workmanship, durable materials and 
-            customer satisfaction.
-        </p>
-        <p>
-            Our services include aluminium doors, window frames, sliding systems, 
-            glass panels and customised architectural aluminium works. 
-            We are committed to delivering modern, reliable and long-lasting 
-            solutions tailored to each client's needs.
-        </p>
-    </div>
-
-    <div class="container contact">
-        <h2>Contact Us</h2>
-        <div class="contact-grid">
-            <div class="contact-left">
-                <h3>Send us a message</h3>
-                <p>Monday - Sunday: 9:30am - 8:00pm</p>
-                <a href="https://wa.me/6012XXXXXXX" target="_blank" class="btn-outline">
-                    Chat via WhatsApp
-                </a>
-                <br><br>
-                <h3>Email</h3>
-                <p>We’ll get back to you as soon as possible.</p>
-                <a href="mailto:example@email.com" class="btn-outline">
-                    Email us
-                </a>
-            </div>
-
-            <div class="contact-right">
-                <h3>Social Media</h3>
-                <p>Follow us to see our latest projects and updates.</p>
-                <div class="social-links">
-                    <p>
-                        <a href="https://www.facebook.com/p/Yong-Sheng-Alu-Enterprise-100054700453045/" target="_blank">Facebook</a> |
-                        <a href="https://www.instagram.com/ys_aluminium_/" target="_blank">Instagram</a> |
-                        <a href="https://www.xiaohongshu.com/user/profile/..." target="_blank">Xiaohongshu</a>
-                    </p>
-                </div>
-                <br><br>
-                <h3>Phone</h3>
-                <p>Call: +60 12-XXXXXXX</p>
-                <p>Monday - Sunday: 9:30am - 10:00pm</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function toggleModal(show) {
-            const modal = document.getElementById('modalOverlay');
-            modal.style.display = show ? 'block' : 'none';
-            document.body.style.overflow = show ? 'hidden' : 'auto';
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') toggleModal(false);
-        });
-    </script>
+<?php include('includes/footer.php'); ?>
 
 </body>
 </html>
