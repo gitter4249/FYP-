@@ -5,24 +5,22 @@ include "../includes/db.php";
 $error = ""; 
 
 if (isset($_POST['staff_login'])) {
-    $input_user = mysqli_real_escape_string($conn, $_POST['staff_id']);
+    $input_email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM staff WHERE staff_id = ?";
+    $sql = "SELECT * FROM staff WHERE email = ? AND status = 1";
     $stmt = $conn->prepare($sql);
     
     if ($stmt) {
-        $stmt->bind_param("s", $input_user);
+        $stmt->bind_param("s", $input_email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($row = $result->fetch_assoc()) {
             if (password_verify($password, $row['password'])) {
-                // --- 修正部分开始 ---
-                $_SESSION['staff_logged_in'] = true; // 【关键点 1】必须设置这个，Dashboard 才能放行
-                $_SESSION['staff_id'] = $row['staff_id'];
+                $_SESSION['staff_logged_in'] = true;
+                $_SESSION['staff_id'] = $row['id']; 
                 $_SESSION['staff_name'] = $row['staff_name'];
-                // --- 修正部分结束 ---
                 
                 header("Location: staff_dashboard.php");
                 exit();
@@ -30,159 +28,257 @@ if (isset($_POST['staff_login'])) {
                 $error = "Invalid password!";
             }
         } else {
-            $error = "Staff ID not found!";
+            $error = "Account inactive or email not found!";
         }
     } else {
         $error = "Database query error!";
     }
 }
+$url_error = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : "";
+$url_success = isset($_GET['success']) ? htmlspecialchars($_GET['success']) : "";
+if (isset($_GET['msg'])) {
+    $url_success = htmlspecialchars($_GET['msg']);
+}
+$display_error = !empty($error) ? $error : $url_error;
+$display_success = $url_success;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Staff Login | YS Aluminium</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            background: #f6f6f6;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
+        :root {
+            --primary-dark: #0f172a;
+            --accent-blue: #3b82f6;
+            --text-gray: #64748b;
+            --bg-glass: rgba(255, 255, 255, 0.92);
+            --error-red: #dc2626;
+            --success-green: #059669;
         }
-
-        /* --- 左上角返回按钮样式 --- */
-        .back-home-btn {
-            position: fixed; 
-            top: 30px;
-            left: 30px; /* 关键点：设置在左侧 */
-            display: flex;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        body, html { 
+            height: 100%; 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden; 
+        }
+        .page-container { 
+            display: flex; 
+            height: 100vh; 
+            width: 100%; 
+            background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('../images/login-bg.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
+            flex-direction: column; 
+            padding: 20px;
+        }
+        .msg-box { 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            font-size: 0.85rem; 
+            text-align: left; 
+            border: 1px solid; 
+        }
+        .error-box { 
+            background: #fee2e2; 
+            color: var(--error-red); 
+            border-color: #fecaca; 
+        }
+        .success-box { 
+            background: #d1fae5; 
+            color: var(--success-green); 
+            border-color: #a7f3d0; 
+        }
+        .login-card { 
+            background: var(--bg-glass); 
+            backdrop-filter: blur(8px); 
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); 
+            width: 95%; 
+            max-width: 400px; 
+            text-align: center; 
+            border: 1px solid rgba(255,255,255,0.4); 
+            animation: fadeIn 0.8s ease; 
+        }
+        @keyframes fadeIn { 
+            from { 
+                opacity: 0; transform: translateY(20px); 
+            } to { 
+                opacity: 1; transform: translateY(0); 
+            } 
+        }
+        .logo-group { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-bottom: 25px; 
+        }
+        .logo-group img { 
+            width: 60px; 
+            height: auto; 
+            border-radius: 8px; 
+            object-fit: cover; 
+        }
+        .logo-text { 
+            font-size: 1.6rem; 
+            font-weight: 800; 
+            color: var(--primary-dark); 
+            letter-spacing: -1px; 
+            margin: 0; 
+        }
+        .subtitle { 
+            color: var(--text-gray); 
+            font-size: 0.9rem; 
+            margin-bottom: 30px; 
+        }
+        .form-group { 
+            text-align: left; 
+            margin-bottom: 20px; 
+        }
+        label { 
+            display: block; 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            margin-bottom: 8px; 
+            color: var(--primary-dark); 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+        }
+        input {
+            width: 100%; 
+            padding: 14px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            background: white; 
+            transition: 0.3s; 
+            box-sizing: border-box; 
+        }
+        input:focus {
+            outline: none; 
+            border-color: var(--accent-blue); 
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1); 
+        }
+        .btn { 
+            width: 100%; 
+            padding: 14px; 
+            background-color: var(--primary-dark); 
+            color: white; 
+            border: none; border-radius: 12px; 
+            font-size: 1rem; font-weight: 600; 
+            cursor: pointer; transition: 0.3s; 
+            margin-top: 10px; 
+        }
+        .btn:hover { 
+            background-color: var(--accent-blue); 
+            transform: translateY(-2px); 
+        }
+        .forgot-link { 
+            display: block; 
+            margin-top: 20px; 
+            font-size: 0.85rem; 
+            color: var(--accent-blue); 
+            text-decoration: none; 
+            font-weight: 600; 
+        }
+        .forgot-link a { 
+            color: var(--accent-blue); 
+            text-decoration: none; 
+        }
+        .forgot-link a:hover { 
+            text-decoration: underline; 
+        }
+        .info-note { 
+            margin-top: 30px; 
+            padding-top: 20px; 
+            border-top: 1px solid rgba(0,0,0,0.05); 
+            font-size: 0.8rem; 
+            color: #64748b; 
+            line-height: 1.5; 
+        }
+        .close-wrapper { 
+            text-align: center; 
+            margin-top: 25px; 
+        }
+        .close-btn {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.8); /* 稍微白一点，在浅色背景上更清爽 */
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 12px;
-            color: #475569;
+            padding: 10px 24px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            color: white;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.3);
         }
-
-        .back-home-btn:hover {
-            background: #fff;
-            transform: translateX(-5px); /* 悬停时往左动一点，引导视觉 */
-            color: #0f172a;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        /* --- 登录卡片样式 --- */
-        .login-card {
-            background: white;
-            padding: 45px 40px;
-            border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-            width: 95%;
-            max-width: 420px;
-            animation: fadeIn 0.7s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .login-card h2 {
-            font-weight: 800;
-            margin-bottom: 8px;
-            text-align: center;
-            color: #0f172a;
-            letter-spacing: -1px;
-        }
-        .login-card p.subtitle {
-            color: #64748b;
-            text-align: center;
-            margin-bottom: 35px;
-            font-size: 14px;
-        }
-        .form-label {
-            color: #0f172a;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-        }
-        .form-control {
-            border-radius: 12px;
-            padding: 13px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 22px;
-            transition: 0.3s;
-        }
-        .form-control:focus {
-            border-color: #0f172a;
-            box-shadow: none;
-            background-color: #fff;
-        }
-        .btn-login {
-            background: #0f172a;
-            color: white;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            transition: 0.3s;
-            margin-top: 5px;
-        }
-        .btn-login:hover {
-            background: #334155;
+        .close-btn:hover { 
+            background: rgba(0, 0, 0, 0.7); 
             transform: translateY(-2px);
-            color: white;
         }
     </style>
 </head>
 <body>
-
-<a href="../homepage.php" class="back-home-btn">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-    </svg>
-    Back
-</a>
-
-<div class="login-card">
-    <h2>Staff Login</h2>
-    <p class="subtitle">Please enter your credentials to access the staff portal.</p>
-
-    <?php if(!empty($error)): ?>
-        <div class="alert alert-danger py-2 small text-center" style="border-radius: 10px; border: none; background-color: #fee2e2; color: #dc2626;">
-            <?= $error ?>
+<div class="page-container">
+    <div class="login-card">
+        <div class="logo-group">
+            <img src="../images/ys.jpg" alt="YS Logo">
+            <div class="logo-text">YS Aluminium</div>
         </div>
-    <?php endif; ?>
+        <p class="subtitle">Staff Access Portal</p>
 
-    <form method="POST" action="">
-        <div class="form-group">
-            <label class="form-label">Staff ID</label>
-            <input type="text" name="staff_id" class="form-control" placeholder="e.g. staff01" required>
+        <?php if ($display_error): ?>
+            <div class="msg-box error-box"><strong>Error:</strong> <?php echo $display_error; ?></div>
+        <?php endif; ?>
+        <?php if ($display_success): ?>
+            <div class="msg-box success-box"><strong>Success:</strong> <?php echo $display_success; ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="staff@ysaluminium.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" name="staff_login" class="btn">Sign In</button>
+            <div class="forgot-link">
+                <a href="staff_forgot_password.php">Forgot Password?</a>
+            </div>
+        </form>
+
+        <div class="info-note">
+            🛠️ Internal staff use only. Contact IT if you face issues.
         </div>
-        <div class="form-group">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" placeholder="Enter password" required>
-        </div>
-        <button type="submit" name="staff_login" class="btn btn-login">Sign In</button>
-    </form>
+    </div>
+
+    <div class="close-wrapper">
+        <a href="../homepage.php" class="close-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Close
+        </a>
+    </div>
 </div>
-
 </body>
 </html>
