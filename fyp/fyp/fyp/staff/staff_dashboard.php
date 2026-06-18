@@ -285,7 +285,7 @@ if (isset($_POST['register_customer'])) {
         <body>
             <div class='container'>
                 <div class='header'>
-                    <h1>🚪 YS Aluminium</h1>
+                    <h1> YS Aluminium</h1>
                 </div>
                 <div class='content'>
                     <p>Dear <strong>$name</strong>,</p>
