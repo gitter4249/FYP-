@@ -7,9 +7,41 @@ if (!isset($_SESSION['staff_id'])) {
 }
 $staff_id = intval($_SESSION['staff_id']);
 $staff_name = $_SESSION['staff_name'] ?? "Staff";
+if (isset($_GET['action']) && $_GET['action'] == 'get_customer_data') {
+    header('Content-Type: application/json');
+    $customer_id = intval($_GET['id']);
+    if ($customer_id <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Invalid customer ID']);
+        exit;
+    }
+    $cust_sql = "SELECT name, email, phone, gender, race, address FROM customers WHERE customer_id = $customer_id";
+    $cust_res = mysqli_query($conn, $cust_sql);
+    $customer = mysqli_fetch_assoc($cust_res);
+    if (!$customer) {
+        echo json_encode(['success' => false, 'message' => 'Customer not found']);
+        exit;
+    }
+    $prod_sql = "SELECT p.product_id, p.door_brand, p.price_per_sqft, p.material, p.design_type 
+                 FROM customer_selected_products csp
+                 JOIN products p ON csp.product_id = p.product_id
+                 WHERE csp.customer_id = $customer_id AND p.status = 1
+                 ORDER BY p.door_brand ASC";
+    $prod_res = mysqli_query($conn, $prod_sql);
+    $products = [];
+    while ($p = mysqli_fetch_assoc($prod_res)) {
+        $products[] = $p;
+    }
+    
+    echo json_encode([
+        'success' => true,
+        'customer' => $customer,
+        'products' => $products
+    ]);
+    exit;
+}
 
 $cust_res = mysqli_query($conn, "SELECT customer_id, name FROM customers WHERE status = 1 ORDER BY name ASC");
-$prod_res = mysqli_query($conn, "SELECT product_id, door_brand, material, design_type FROM products WHERE status = 1 ORDER BY door_brand ASC");
+$prod_res = mysqli_query($conn, "SELECT product_id, door_brand, material, design_type, price_per_sqft FROM products WHERE status = 1 ORDER BY door_brand ASC");
 $products = [];
 while ($p = mysqli_fetch_assoc($prod_res)) {
     $products[] = $p;
@@ -181,6 +213,23 @@ while ($p = mysqli_fetch_assoc($prod_res)) {
             width: 24px; 
             color: #0284c7; 
         }
+        .customer-products-tag {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed #d4d4d8;
+        }
+        .customer-products-tag .badge {
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+        .customer-products-tag .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+            background-color: #0a58ca;
+        }
         .descriptions-container { 
             margin-top: 10px; 
             padding-left: 15px; 
@@ -198,6 +247,10 @@ while ($p = mysqli_fetch_assoc($prod_res)) {
         }
         .desc-input { 
             flex: 1; 
+        }
+        .quick-add-hint {
+            font-size: 0.75rem;
+            color: #6c757d;
         }
     </style>
 </head>
@@ -245,7 +298,7 @@ while ($p = mysqli_fetch_assoc($prod_res)) {
                                 <select name="items[0][product_id]" class="form-select product-select" required>
                                     <option value="">-- Select Product --</option>
                                     <?php foreach ($products as $p): ?>
-                                        <option value="<?php echo $p['product_id']; ?>"><?php echo htmlspecialchars($p['door_brand'] . ' (' . $p['material'] . ')'); ?></option>
+                                        <option value="<?php echo $p['product_id']; ?>" data-price="<?php echo $p['price_per_sqft']; ?>"><?php echo htmlspecialchars($p['door_brand'] . ' (' . $p['material'] . ')'); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -285,30 +338,66 @@ while ($p = mysqli_fetch_assoc($prod_res)) {
 <script>
     const productList = <?php echo json_encode($products); ?>;
     let itemIndex = 1;
+    let currentCustomerProducts = [];
 
     $(document).ready(function() {
         $('.select2-customer').select2({ placeholder: '-- Choose Customer --', allowClear: true, width: '100%' });
         $('.select2-customer').on('change', function() {
             const customerId = $(this).val();
-            if (customerId) fetchCustomerInfo(customerId);
-            else $('#customerInfoContainer').hide().empty();
+            if (customerId) fetchCustomerData(customerId);
+            else {
+                $('#customerInfoContainer').hide().empty();
+                currentCustomerProducts = [];
+            }
         });
         generateDescriptionInputs(0, 1);
     });
 
-    function fetchCustomerInfo(customerId) {
-        fetch(`get_customer_info.php?id=${customerId}`)
+    function fetchCustomerData(customerId) {
+        fetch(`create_quotation.php?action=get_customer_data&id=${customerId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     const container = document.getElementById('customerInfoContainer');
+                    const cust = data.customer;
+                    const products = data.products || [];
+                    currentCustomerProducts = products;
+                    
+                    let productsHtml = '';
+                    if (products.length > 0) {
+                        productsHtml = `
+                            <div class="customer-products-tag">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="fw-bold small text-uppercase text-muted me-2">Interested Products:</span>
+                                    ${products.map(p => `
+                                    <span class="badge bg-primary product-tag" 
+                                        data-product-id="${p.product_id}" 
+                                        data-product-name="${escapeHtml(p.door_brand)}" 
+                                        data-product-price="${p.price_per_sqft}"
+                                        onclick="addProductFromTag(this)">
+                                        ${escapeHtml(p.door_brand)}
+                                    </span>
+                                    `).join('')}
+                                    <span class="quick-add-hint ms-2"><i class="bi bi-hand-index"></i> Click to add</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        productsHtml = `
+                            <div class="customer-products-tag">
+                                <span class="text-muted small"><i class="bi bi-info-circle"></i> No products selected by this customer.</span>
+                            </div>
+                        `;
+                    }
+                    
                     container.innerHTML = `
                         <div class="row">
-                            <div class="col-md-6"><i class="bi bi-person"></i> <strong>Name:</strong> ${escapeHtml(data.name)}</div>
-                            <div class="col-md-6"><i class="bi bi-envelope"></i> <strong>Email:</strong> ${escapeHtml(data.email)}</div>
-                            <div class="col-md-6 mt-2"><i class="bi bi-telephone"></i> <strong>Phone:</strong> ${escapeHtml(data.phone)}</div>
-                            <div class="col-md-6 mt-2"><i class="bi bi-gender-ambiguous"></i> <strong>Gender/Race:</strong> ${escapeHtml(data.gender)} / ${escapeHtml(data.race)}</div>
-                            <div class="col-12 mt-2"><i class="bi bi-geo-alt"></i> <strong>Address:</strong> ${escapeHtml(data.address)}</div>
+                            <div class="col-md-6"><i class="bi bi-person"></i> <strong>Name:</strong> ${escapeHtml(cust.name)}</div>
+                            <div class="col-md-6"><i class="bi bi-envelope"></i> <strong>Email:</strong> ${escapeHtml(cust.email)}</div>
+                            <div class="col-md-6 mt-2"><i class="bi bi-telephone"></i> <strong>Phone:</strong> ${escapeHtml(cust.phone)}</div>
+                            <div class="col-md-6 mt-2"><i class="bi bi-gender-ambiguous"></i> <strong>Gender/Race:</strong> ${escapeHtml(cust.gender)} / ${escapeHtml(cust.race)}</div>
+                            <div class="col-12 mt-2"><i class="bi bi-geo-alt"></i> <strong>Address:</strong> ${escapeHtml(cust.address)}</div>
+                            ${productsHtml}
                         </div>
                     `;
                     container.style.display = 'block';
@@ -349,30 +438,128 @@ while ($p = mysqli_fetch_assoc($prod_res)) {
         });
     }
 
+    function addProductFromTag(element) {
+        const productId = element.getAttribute('data-product-id');
+        const productName = element.getAttribute('data-product-name');
+        const productPrice = 0;
+        
+        const product = productList.find(p => p.product_id == productId);
+        if (!product) {
+            alert('Product details not found.');
+            return;
+        }
+        
+        const container = document.getElementById('itemsContainer');
+        const existingRows = container.querySelectorAll('.item-row');
+        
+        let targetRow = null;
+        for (let row of existingRows) {
+            const select = row.querySelector('.product-select');
+            if (select && select.value === '') {
+                targetRow = row;
+                break;
+            }
+        }
+        
+        let rowIndex;
+        if (targetRow) {
+            rowIndex = targetRow.getAttribute('data-item-index');
+            const select = targetRow.querySelector('.product-select');
+            select.value = productId;
+            const priceInput = targetRow.querySelector('.price');
+            if (priceInput) priceInput.value = productPrice.toFixed(2);
+            const detailsContainer = targetRow.querySelector('.descriptions-container');
+            if (detailsContainer) {
+                const descInputs = detailsContainer.querySelectorAll('.desc-input');
+                descInputs.forEach(inp => inp.value = '');
+            }
+            calculateTotal();
+        } else {
+            addItemRow(productId, productPrice);
+        }
+    }
+
+    function addItemRow(productId, productPrice) {
+        const container = document.getElementById('itemsContainer');
+        const newRow = document.createElement('div');
+        const idx = itemIndex;
+        newRow.classList.add('item-row');
+        newRow.setAttribute('data-item-index', idx);
+        
+        let selectHtml = '<select name="items[' + idx + '][product_id]" class="form-select product-select" required>';
+        selectHtml += '<option value="">-- Select Product --</option>';
+        productList.forEach(p => {
+            const selected = (p.product_id == productId) ? 'selected' : '';
+            selectHtml += `<option value="${p.product_id}" data-price="${p.price_per_sqft}" ${selected}>${escapeHtml(p.door_brand + ' (' + p.material + ')')}</option>`;
+        });
+        selectHtml += '</select>';
+        
+        newRow.innerHTML = `
+            <div class="row g-3">
+                <div class="col-md-3"><label class="form-label">Product <span class="text-danger">*</span></label>${selectHtml}</div>
+                <div class="col-md-2"><label class="form-label">Quantity <span class="text-danger">*</span></label><input type="number" min="1" step="1" name="items[${idx}][quantity]" class="form-control qty" value="1" required></div>
+                <div class="col-md-2"><label class="form-label">Unit Price (RM) <span class="text-danger">*</span></label><input type="number" min="0" step="0.01" name="items[${idx}][unit_price]" class="form-control price" value="${productPrice.toFixed(2)}" required></div>
+                <div class="col-md-2"><label class="form-label">Discount (RM)</label><input type="number" min="0" step="0.01" name="items[${idx}][discount]" class="form-control disc" value="0.00"></div>
+                <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn-outline-danger-custom remove-item"><i class="bi bi-trash"></i></button></div>
+            </div>
+            <div class="descriptions-container" data-desc-container="${idx}"></div>
+        `;
+        container.appendChild(newRow);
+        
+        newRow.querySelector('.remove-item').addEventListener('click', function(e) {
+            e.target.closest('.item-row').remove();
+            calculateTotal();
+        });
+        generateDescriptionInputs(idx, 1);
+        bindQuantityEvents(newRow);
+        newRow.querySelectorAll('.price, .disc').forEach(inp => inp.addEventListener('input', calculateTotal));
+        
+        newRow.querySelector('.product-select').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const priceInput = this.closest('.row').querySelector('.price');
+            if (priceInput) priceInput.value = '0.00';
+            calculateTotal();
+        });
+        
+        itemIndex++;
+        calculateTotal();
+    }
+
     document.getElementById('addItemBtn').addEventListener('click', function() {
         const container = document.getElementById('itemsContainer');
         const newRow = document.createElement('div');
+        const idx = itemIndex;
         newRow.classList.add('item-row');
-        newRow.setAttribute('data-item-index', itemIndex);
-        let selectHtml = '<select name="items[' + itemIndex + '][product_id]" class="form-select product-select" required>';
+        newRow.setAttribute('data-item-index', idx);
+        let selectHtml = '<select name="items[' + idx + '][product_id]" class="form-select product-select" required>';
         selectHtml += '<option value="">-- Select Product --</option>';
-        productList.forEach(p => selectHtml += `<option value="${p.product_id}">${escapeHtml(p.door_brand + ' (' + p.material + ')')}</option>`);
+        productList.forEach(p => selectHtml += `<option value="${p.product_id}" data-price="${p.price_per_sqft}">${escapeHtml(p.door_brand + ' (' + p.material + ')')}</option>`);
         selectHtml += '</select>';
         newRow.innerHTML = `
             <div class="row g-3">
                 <div class="col-md-3"><label class="form-label">Product <span class="text-danger">*</span></label>${selectHtml}</div>
-                <div class="col-md-1"><label class="form-label">Quantity <span class="text-danger">*</span></label><input type="number" min="1" step="1" name="items[${itemIndex}][quantity]" class="form-control qty" value="1" required></div>
-                <div class="col-md-2"><label class="form-label">Unit Price (RM) <span class="text-danger">*</span></label><input type="number" min="0" step="0.01" name="items[${itemIndex}][unit_price]" class="form-control price" value="0.00" required></div>
-                <div class="col-md-2"><label class="form-label">Discount (RM)</label><input type="number" min="0" step="0.01" name="items[${itemIndex}][discount]" class="form-control disc" value="0.00"></div>
+                <div class="col-md-2"><label class="form-label">Quantity <span class="text-danger">*</span></label><input type="number" min="1" step="1" name="items[${idx}][quantity]" class="form-control qty" value="1" required></div>
+                <div class="col-md-2"><label class="form-label">Unit Price (RM) <span class="text-danger">*</span></label><input type="number" min="0" step="0.01" name="items[${idx}][unit_price]" class="form-control price" value="0.00" required></div>
+                <div class="col-md-2"><label class="form-label">Discount (RM)</label><input type="number" min="0" step="0.01" name="items[${idx}][discount]" class="form-control disc" value="0.00"></div>
                 <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn-outline-danger-custom remove-item"><i class="bi bi-trash"></i></button></div>
             </div>
-            <div class="descriptions-container" data-desc-container="${itemIndex}"></div>
+            <div class="descriptions-container" data-desc-container="${idx}"></div>
         `;
         container.appendChild(newRow);
-        newRow.querySelector('.remove-item').addEventListener('click', e => e.target.closest('.item-row').remove() && calculateTotal());
-        generateDescriptionInputs(itemIndex, 1);
+        newRow.querySelector('.remove-item').addEventListener('click', function(e) {
+            e.target.closest('.item-row').remove();
+            calculateTotal();
+        });
+        generateDescriptionInputs(idx, 1);
         bindQuantityEvents(newRow);
         newRow.querySelectorAll('.price, .disc').forEach(inp => inp.addEventListener('input', calculateTotal));
+        newRow.querySelector('.product-select').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            const priceInput = this.closest('.row').querySelector('.price');
+            if (priceInput) priceInput.value = price.toFixed(2);
+            calculateTotal();
+        });
         itemIndex++;
         calculateTotal();
     });
@@ -384,6 +571,11 @@ while ($p = mysqli_fetch_assoc($prod_res)) {
             row.querySelectorAll('.price, .disc').forEach(inp => inp.addEventListener('input', calculateTotal));
             const qty = parseInt(row.querySelector('.qty')?.value) || 1;
             generateDescriptionInputs(row.getAttribute('data-item-index'), qty);
+            row.querySelector('.product-select').addEventListener('change', function() {
+                const priceInput = this.closest('.row').querySelector('.price');
+                if (priceInput) priceInput.value = '0.00';
+                calculateTotal();
+            });
         });
     }
 
