@@ -216,8 +216,101 @@ if (isset($_POST['register_customer'])) {
             }
         }
         $subject = "Welcome to YS Aluminium";
-        $body = "<!DOCTYPE html>...</html>";
-        $altBody = "Hello $name,...";
+        $body = "
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Welcome to YS Aluminium</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f6f6f6;
+                    margin: 0;
+                    padding: 20px;
+                }
+                .container {
+                    max-width: 500px;
+                    margin: 0 auto;
+                    background: #ffffff;
+                    border-radius: 12px;
+                    padding: 30px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                }
+                .header {
+                    text-align: center;
+                    padding-bottom: 20px;
+                    border-bottom: 2px solid #f0f0f0;
+                }
+                .header h1 {
+                    font-size: 24px;
+                    color: #1a1a1a;
+                    margin: 0;
+                }
+                .content {
+                    padding: 20px 0;
+                    line-height: 1.6;
+                    color: #333;
+                }
+                .content .details {
+                    background: #f9f9f9;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin: 15px 0;
+                }
+                .content .details strong {
+                    display: inline-block;
+                    width: 100px;
+                }
+                .footer {
+                    text-align: center;
+                    color: #888;
+                    font-size: 13px;
+                    border-top: 1px solid #eee;
+                    padding-top: 20px;
+                    margin-top: 10px;
+                }
+                .btn {
+                    display: inline-block;
+                    background: #0d6efd;
+                    color: #fff;
+                    padding: 10px 20px;
+                    border-radius: 6px;
+                    text-decoration: none;
+                    margin: 10px 0;
+                }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>🚪 YS Aluminium</h1>
+                </div>
+                <div class='content'>
+                    <p>Dear <strong>$name</strong>,</p>
+                    <p>Welcome to YS Aluminium! Your account has been successfully created.</p>
+                    <div class='details'>
+                        <p><strong>Email:</strong> $email</p>
+                        <p><strong>Password:</strong> $plain_password</p>
+                    </div>
+                    <p>You can now log in to your account using the credentials above.</p>
+                    <p><strong>For your security, please change your password after your first login.</strong></p>
+                    <p>If you have any questions, feel free to contact us anytime.</p>
+                    <p>We look forward to serving you!</p>
+                </div>
+                <div class='footer'>
+                    <p>YS Aluminium Sdn Bhd<br>
+                    Phone: +60 18-366 5756<br>
+                    Email: yongshengalu@gmail.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        $altBody = "Dear $name,\n\nWelcome to YS Aluminium! Your account has been successfully created.\n\nEmail: $email\nPassword: $plain_password\n\nYou can now log in using these credentials.\nFor security, please change your password after first login.\n\nIf you have any questions, contact us at yongshengalu@gmail.com or +60 18-366 5756.\n\nYS Aluminium Sdn Bhd";
+        sendYSAluminiumEmail($email, $name, $subject, $body, $altBody);
         sendYSAluminiumEmail($email, $name, $subject, $body, $altBody);
         echo "<script>alert('Customer registered successfully!'); window.location.href='staff_dashboard.php?active_section=customer';</script>";
         exit;
