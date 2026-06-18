@@ -1809,21 +1809,11 @@ $recent_customers = mysqli_query($conn, "SELECT customer_id, name, email, create
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Password <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input type="password" name="password" id="customer_password" class="form-control" required minlength="6">
-                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="customer_password">
-                                <i class="bi bi-eye-slash"></i>
-                            </button>
-                        </div>
+                        <input type="password" name="password" id="customer_password" class="form-control" required minlength="6">
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Confirm Password <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input type="password" name="confirm_password" id="customer_confirm_password" class="form-control" required minlength="6">
-                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="customer_confirm_password">
-                                <i class="bi bi-eye-slash"></i>
-                            </button>
-                        </div>
+                        <input type="password" name="confirm_password" id="customer_confirm_password" class="form-control" required minlength="6">
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Profile Image (Optional)</label>
@@ -2465,25 +2455,6 @@ $recent_customers = mysqli_query($conn, "SELECT customer_id, name, email, create
         };
         fileInput.click();
     }
-
-    document.querySelectorAll('.toggle-password').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            if (input) {
-                const icon = this.querySelector('i');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('bi-eye-slash');
-                    icon.classList.add('bi-eye');
-                } else {
-                    input.type = 'password';
-                    icon.classList.remove('bi-eye');
-                    icon.classList.add('bi-eye-slash');
-                }
-            }
-        });
-    });
 
     function validateCustomerPasswords() {
         let pwd = document.getElementById('customer_password')?.value;
