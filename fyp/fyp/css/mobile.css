@@ -1,0 +1,270 @@
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .card-custom {
+        border-radius: 12px;
+        margin-bottom: 15px;
+    }
+    .card-header-custom {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+    .card-body-custom,
+    .card-body {
+        padding: 16px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .table thead th,
+    .table tbody td {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .stats-card .card-body {
+        padding: 12px !important;
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    .stats-card h2 {
+        font-size: 1.5rem;
+    }
+    .stats-card i {
+        font-size: 1.8rem !important;
+    }
+
+    .btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+    .btn-dark-custom {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+
+    .step-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.7rem !important;
+    }
+    .step-circle i {
+        font-size: 1.2rem !important;
+    }
+    .step-label {
+        font-size: 0.55rem !important;
+    }
+
+    .payment-stage-card {
+        padding: 0.8rem;
+        font-size: 0.85rem;
+    }
+    .row.g-3 > .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .quote-invoice-table td,
+    .quote-invoice-table th {
+        font-size: 0.7rem;
+        padding: 6px 8px;
+    }
+
+    .modal-dialog {
+        margin: 10px;
+    }
+    .modal-content {
+        border-radius: 12px;
+    }
+    .modal-header h5 {
+        font-size: 1rem;
+    }
+    .modal-body {
+        padding: 16px;
+    }
+
+    .profile-avatar img {
+        width: 80px;
+        height: 80px;
+    }
+    .profile-cover {
+        height: 80px;
+    }
+    .profile-avatar {
+        margin-top: -40px;
+        margin-left: 15px;
+        width: 80px;
+    }
+    .profile-info h2 {
+        font-size: 1.2rem !important;
+    }
+
+    .chat-main-container {
+        flex-direction: column;
+        height: 80vh;
+        border-radius: 12px;
+    }
+    .chat-user-sidebar {
+        width: 100%;
+        max-height: 180px;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .chat-room {
+        height: calc(100% - 180px);
+    }
+    .chat-msg-bubble {
+        max-width: 85%;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+    .chat-input-area input {
+        font-size: 0.85rem;
+        padding: 8px 14px;
+    }
+    .chat-input-area button {
+        font-size: 0.85rem;
+        padding: 0 14px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.1rem !important;
+    }
+    .page-title {
+        font-size: 1.2rem !important;
+    }
+
+    .sidebar {
+        width: 0 !important;
+        overflow: hidden !important;
+        transition: width 0.3s ease !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        z-index: 1050 !important;
+        background: #1c1c1e !important;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.2) !important;
+    }
+    .sidebar.show {
+        width: 280px !important;
+        overflow-y: auto !important;
+    }
+
+    .menu-toggle {
+        display: block !important;
+        position: fixed !important;
+        top: 12px !important;
+        left: 12px !important;
+        z-index: 1060 !important;
+        background: #1c1c1e !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 6px 12px !important;
+        font-size: 1.8rem !important;
+        cursor: pointer !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+    }
+    .menu-toggle i {
+        font-size: 1.8rem !important;
+    }
+
+    .main-content,
+    .navbar {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 12px !important;
+    }
+
+    .navbar {
+        padding: 0 8px !important;
+        height: 56px;
+        flex-wrap: wrap;
+    }
+    .nav-links a {
+        font-size: 0.65rem;
+        margin-right: 8px;
+    }
+    .search-wrapper {
+        max-width: 160px;
+        margin: 0 8px;
+    }
+    .search-wrapper .search-bar {
+        padding: 6px 10px 6px 30px;
+        font-size: 0.75rem;
+    }
+    .search-wrapper i {
+        left: 10px;
+        font-size: 0.8rem;
+    }
+
+    .account-area span {
+        display: none;
+    }
+    .account-area img {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    .card-custom-chart .card-body {
+        height: 220px !important;
+    }
+
+    .alert {
+        font-size: 0.85rem;
+        padding: 12px 16px;
+    }
+
+    .step-item .step-circle {
+        width: 32px;
+        height: 32px;
+    }
+    .step-item .step-label {
+        font-size: 0.5rem;
+    }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+    body {
+        font-size: 15px;
+    }
+
+    .row.g-3 > .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    .row.g-3 > .col-md-4:last-child {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .table thead th,
+    .table tbody td {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+    .sidebar {
+        width: 220px;
+    }
+    .main-content,
+    .navbar {
+        margin-left: 220px;
+        width: calc(100% - 220px);
+    }
+    .search-wrapper {
+        max-width: 250px;
+    }
+}

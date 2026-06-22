@@ -1,0 +1,436 @@
+2026-06-22 16:08:55 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 18
+            [unit_price] => 324
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 3'0" (W) × 7'0" (H)
+                            [area] => 21
+                            [width] => 900
+                            [height] => 2100
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 1
+        )
+
+)
+
+2026-06-22 16:09:08 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 18
+            [unit_price] => 324
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 3'0" (W) × 7'0" (H)
+                            [area] => 21
+                            [width] => 900
+                            [height] => 2100
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 1
+        )
+
+)
+
+2026-06-22 16:29:40 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 18
+            [unit_price] => 324
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 3'0" (W) × 7'0" (H)
+                            [area] => 21
+                            [width] => 900
+                            [height] => 2100
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 1
+        )
+
+)
+
+2026-06-22 16:32:14 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 18
+            [unit_price] => 324
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 3'0" (W) × 7'0" (H)
+                            [area] => 21
+                            [width] => 900
+                            [height] => 2100
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 1
+        )
+
+)
+
+2026-06-22 16:33:08 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 14
+            [unit_price] => 60
+            [discount] => 600
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 3'6" (W) × 7'6" (H)
+                            [area] => 26.25
+                            [width] => 1050
+                            [height] => 2233
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 1
+        )
+
+)
+
+2026-06-22 16:34:40 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 10
+            [unit_price] => 76
+            [discount] => 699
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 7'6" (W) × 11'6" (H)
+                            [area] => 86.25
+                            [width] => 2313
+                            [height] => 3462
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 15'0" (W) × 4'6" (H)
+                            [area] => 67.5
+                            [width] => 4522
+                            [height] => 1323
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+    [1] => Array
+        (
+            [product_id] => 15
+            [unit_price] => 85
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 14'0" (W) × 3'6" (H)
+                            [area] => 49
+                            [width] => 4235
+                            [height] => 1123
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 4'0" (W) × 14'0" (H)
+                            [area] => 56
+                            [width] => 1233
+                            [height] => 4234
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+)
+
+2026-06-22 16:34:53 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 10
+            [unit_price] => 76
+            [discount] => 699
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 7'6" (W) × 11'6" (H)
+                            [area] => 86.25
+                            [width] => 2313
+                            [height] => 3462
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 15'0" (W) × 4'6" (H)
+                            [area] => 67.5
+                            [width] => 4522
+                            [height] => 1323
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+    [1] => Array
+        (
+            [product_id] => 15
+            [unit_price] => 85
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 14'0" (W) × 3'6" (H)
+                            [area] => 49
+                            [width] => 4235
+                            [height] => 1123
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 4'0" (W) × 14'0" (H)
+                            [area] => 56
+                            [width] => 1233
+                            [height] => 4234
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+)
+
+2026-06-22 16:36:21 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 10
+            [unit_price] => 76
+            [discount] => 699
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 7'6" (W) × 11'6" (H)
+                            [area] => 86.25
+                            [width] => 2313
+                            [height] => 3462
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 15'0" (W) × 4'6" (H)
+                            [area] => 67.5
+                            [width] => 4522
+                            [height] => 1323
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+    [1] => Array
+        (
+            [product_id] => 15
+            [unit_price] => 85
+            [discount] => 500
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 14'0" (W) × 3'6" (H)
+                            [area] => 49
+                            [width] => 4235
+                            [height] => 1123
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 4'0" (W) × 14'0" (H)
+                            [area] => 56
+                            [width] => 1233
+                            [height] => 4234
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+)
+
+2026-06-22 16:36:42 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 10
+            [unit_price] => 76
+            [discount] => 699
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 7'6" (W) × 11'6" (H) (In Kichen)
+                            [area] => 86.25
+                            [width] => 2313
+                            [height] => 3462
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 15'0" (W) × 4'6" (H)
+                            [area] => 67.5
+                            [width] => 4522
+                            [height] => 1323
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+    [1] => Array
+        (
+            [product_id] => 15
+            [unit_price] => 85
+            [discount] => 500
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 14'0" (W) × 3'6" (H)
+                            [area] => 49
+                            [width] => 4235
+                            [height] => 1123
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 4'0" (W) × 14'0" (H)
+                            [area] => 56
+                            [width] => 1233
+                            [height] => 4234
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+)
+
+2026-06-22 16:44:44 - edit_items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 15
+            [unit_price] => 85
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 5'0" (W) × 10'6" (H)
+                            [area] => 52.5
+                            [width] => 1504
+                            [height] => 3212
+                            [quantity] => 1
+                        )
+
+                    [1] => Array
+                        (
+                            [desc] => 13'6" (W) × 10'6" (H)
+                            [area] => 141.75
+                            [width] => 4124
+                            [height] => 3125
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 2
+        )
+
+    [1] => Array
+        (
+            [product_id] => 10
+            [unit_price] => 76
+            [discount] => 0
+            [subitems] => Array
+                (
+                    [0] => Array
+                        (
+                            [desc] => 10'6" (W) × 4'0" (H)
+                            [area] => 42
+                            [width] => 3244
+                            [height] => 1234
+                            [quantity] => 1
+                        )
+
+                )
+
+            [quantity] => 1
+        )
+
+)
+
