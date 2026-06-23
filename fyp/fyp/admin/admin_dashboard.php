@@ -50,8 +50,7 @@ function getAdminCustomerAvatarSrc($profile_image, $customer_name, $gender = '',
 $admin_id = $_SESSION['admin_id'] ?? 1;
 
 function validate_password_strength($password) {
-    if (strlen($password) >= 15) return true;
-    if (strlen($password) >= 8 && preg_match('/[0-9]/', $password) && preg_match('/[a-z]/', $password)) {
+    if (preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
         return true;
     }
     return false;
@@ -105,8 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_admin_password'
         exit;
     }
 
-    if (strlen($new) < 6) {
-        echo json_encode(['success' => false, 'message' => 'Password must be at least 6 characters!']);
+    if (!validate_password_strength($new)) {
+        echo json_encode(['success' => false, 'message' => 'Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.']);
         exit;
     }
 
@@ -304,7 +303,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_new_admin'])) {
     }
 
     if (!validate_password_strength($admin_pass)) {
-        echo "<script><small>alert('Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.')</small>; window.history.back();</script>";
+        echo "<script><small>alert('Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.')</small>; window.history.back();</script>";
         exit;
     }
 
@@ -565,6 +564,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reg_staff'])) {
     $s_name    = mysqli_real_escape_string($conn, $_POST['staff_name']);
     $s_email   = mysqli_real_escape_string($conn, $_POST['staff_email']);
     $s_phone   = mysqli_real_escape_string($conn, $_POST['staff_phone']);
+    $s_address = isset($_POST['staff_address']) ? mysqli_real_escape_string($conn, $_POST['staff_address']) : '';
     $s_calendar_url = isset($_POST['staff_calendar_url']) ? trim($_POST['staff_calendar_url']) : '';
     $s_pass = $_POST['password'];
     $s_confirm = $_POST['confirm_password'];
@@ -584,7 +584,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reg_staff'])) {
     }
 
     if (!validate_password_strength($s_pass)) {
-        echo "<script>alert('Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.'); window.history.back();</script>";
+        echo "<script>alert('Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.'); window.history.back();</script>";
         exit;
     }
 
@@ -605,11 +605,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reg_staff'])) {
     $profile_image = '../uploads/staff_avatars/default_avatar.png';
 
     $stmt = $conn->prepare("
-        INSERT INTO staff (staff_name, email, phone, password, status, profile_image, appointment_calendar)
-        VALUES (?, ?, ?, ?, 1, ?, ?)
+        INSERT INTO staff (staff_name, email, phone, address, password, status, profile_image, appointment_calendar)
+        VALUES (?, ?, ?, ?, ?, 1, ?, ?)
     ");
 
-    $stmt->bind_param("ssssss", $s_name, $s_email, $s_phone, $s_pass_hash, $profile_image, $s_calendar_url);
+    $stmt->bind_param("sssssss", $s_name, $s_email, $s_phone, $s_address, $s_pass_hash, $profile_image, $s_calendar_url);
     if ($stmt->execute()) {
         $subject = "Staff Account Created - YS Aluminium";
         $body = "
@@ -681,6 +681,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_staff'])) {
         SET staff_name='$s_name',
             email='$s_email',
             phone='$s_phone',
+            address='$s_address',
             appointment_calendar='$s_calendar_url'
             $avatar_update
         WHERE id=$id
@@ -732,7 +733,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_customer'])) {
     }
 
     if (!validate_password_strength($c_pass)) {
-        echo "<script>alert('Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.'); window.history.back();</script>";
+        echo "<script>alert('Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.'); window.history.back();</script>";
         exit;
     }
 
@@ -1636,7 +1637,7 @@ $view = $_GET['view'] ?? 'dashboard';
                             <label class="form-label small fw-bold">New Password</label>
                             <input type="password" name="new_password" id="admin_new_password" class="form-control" required>
                             <div class="password-helper" id="admin_new_password_helper">
-                                <span class="password-helper-text">Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.</span>
+                                <span class="password-helper-text">Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.</span>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -1743,7 +1744,7 @@ $view = $_GET['view'] ?? 'dashboard';
             const helper = document.getElementById(helperId);
             if (!input || !helper) return false;
             const val = input.value;
-            const strong = val.length >= 15 || (val.length >= 8 && /[0-9]/.test(val) && /[a-z]/.test(val));
+            const strong = isPasswordStrong(val);
             if (val.length > 0 && !strong) {
                 input.classList.add('is-invalid');
                 helper.classList.add('error');
@@ -2270,17 +2271,18 @@ $view = $_GET['view'] ?? 'dashboard';
 
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
-                                                <button class="btn-action edit-staff-btn"
-                                                        data-id="<?= $s['id'] ?>"
-                                                        data-name="<?= htmlspecialchars($s['staff_name'], ENT_QUOTES) ?>"
-                                                        data-email="<?= htmlspecialchars($s['email'] ?? '', ENT_QUOTES) ?>"
-                                                        data-phone="<?= htmlspecialchars($s['phone'] ?? '', ENT_QUOTES) ?>"
-                                                        data-calendar="<?= htmlspecialchars($s['appointment_calendar'] ?? '', ENT_QUOTES) ?>"
-                                                        data-avatar="<?= $avatar_path ?>"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#editStaffModal">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
+                                               <button class="btn-action edit-staff-btn"
+                                                    data-id="<?= $s['id'] ?>"
+                                                    data-name="<?= htmlspecialchars($s['staff_name'], ENT_QUOTES) ?>"
+                                                    data-email="<?= htmlspecialchars($s['email'] ?? '', ENT_QUOTES) ?>"
+                                                    data-phone="<?= htmlspecialchars($s['phone'] ?? '', ENT_QUOTES) ?>"
+                                                    data-address="<?= htmlspecialchars($s['address'] ?? '', ENT_QUOTES) ?>"
+                                                    data-calendar="<?= htmlspecialchars($s['appointment_calendar'] ?? '', ENT_QUOTES) ?>"
+                                                    data-avatar="<?= $avatar_path ?>"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editStaffModal">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -2324,10 +2326,15 @@ $view = $_GET['view'] ?? 'dashboard';
                             </div>
 
                             <div class="mb-3">
+                                <label class="form-label small fw-bold">Address</label>
+                                <textarea name="staff_address" class="form-control" rows="2"></textarea>
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label small fw-bold">Password <span class="text-danger">*</span></label>
                                 <input type="password" name="password" id="staff_password" class="form-control" required>
                                 <div class="password-helper" id="staff_password_helper">
-                                    <span class="password-helper-text">Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.</span>
+                                    <span class="password-helper-text">Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.</span>
                                 </div>
                             </div>
 
@@ -2378,7 +2385,10 @@ $view = $_GET['view'] ?? 'dashboard';
                                 <label class="form-label small fw-bold">Phone Number <span class="text-danger">*</span></label>
                                 <input type="tel" name="staff_phone" id="edit_staff_phone" class="form-control" placeholder="Numbers only" pattern="0[0-9]{9,}" title="Only digits are allowed" required>
                             </div>
-
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Address</label>
+                                <textarea name="staff_address" id="edit_staff_address" class="form-control" rows="2"></textarea>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Google Calendar Link <span class="text-danger">*</span></label>
                                 <input type="url" name="staff_calendar_url" id="edit_staff_calendar" class="form-control" placeholder="https://calendar.app.google/xxxxxx" required>
@@ -2534,7 +2544,7 @@ $view = $_GET['view'] ?? 'dashboard';
                                 <label class="form-label small fw-bold">Password <span class="text-danger">*</span></label>
                                 <input type="password" name="a_password" id="a_password" class="form-control" required>
                                 <div class="password-helper" id="a_password_helper">
-                                    <span class="password-helper-text">Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.</span>
+                                    <span class="password-helper-text">Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.</span>
                                 </div>
                             </div>
 
@@ -3208,7 +3218,7 @@ $view = $_GET['view'] ?? 'dashboard';
                             <label class="form-label small fw-bold">Password <span class="text-danger">*</span></label>
                             <input type="password" name="password" id="customer_password" class="form-control" required>
                             <div class="password-helper" id="customer_password_helper">
-                                <span class="password-helper-text">Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.</span>
+                                <span class="password-helper-text">Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.</span>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -4160,7 +4170,7 @@ $view = $_GET['view'] ?? 'dashboard';
             return false;
         }
         if (!isPasswordStrong(pwd)) {
-            alert('Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.');
+            alert('Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.');
             return false;
         }
         if (email && !email.value.match(/@gmail\.com$/i)) {
@@ -4204,7 +4214,7 @@ $view = $_GET['view'] ?? 'dashboard';
             return false;
         }
         if (!isPasswordStrong(pwd)) {
-            alert('Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.');
+            alert('Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.');
             return false;
         }
         if (email && !email.value.match(/@gmail\.com$/i)) {
@@ -4248,7 +4258,7 @@ $view = $_GET['view'] ?? 'dashboard';
             return false;
         }
         if (!isPasswordStrong(pwd)) {
-            alert('Password must be at least 15 characters, OR at least 8 characters including a number and a lowercase letter.');
+            alert('Password must be at least 8 characters, including uppercase, lowercase, number, and special symbol.');
             return false;
         }
         if (email && !email.value.match(/@gmail\.com$/i)) {
@@ -4298,7 +4308,7 @@ $view = $_GET['view'] ?? 'dashboard';
     }
 
     function isPasswordStrong(password) {
-        return password.length >= 15 || (password.length >= 8 && /[0-9]/.test(password) && /[a-z]/.test(password));
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
     }
 
     function editCustomer(id, name, email, phone, address, gender, race) {
@@ -4312,14 +4322,15 @@ $view = $_GET['view'] ?? 'dashboard';
     }
 
     document.querySelectorAll('.edit-staff-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.getElementById('edit_staff_id').value = this.dataset.id;
-            document.getElementById('edit_staff_name').value = this.dataset.name;
-            document.getElementById('edit_staff_email').value = this.dataset.email;
-            document.getElementById('edit_staff_phone').value = this.dataset.phone;
-            document.getElementById('edit_staff_calendar').value = this.dataset.calendar || '';
-        });
+    btn.addEventListener('click', function() {
+        document.getElementById('edit_staff_id').value = this.dataset.id;
+        document.getElementById('edit_staff_name').value = this.dataset.name;
+        document.getElementById('edit_staff_email').value = this.dataset.email;
+        document.getElementById('edit_staff_phone').value = this.dataset.phone;
+        document.getElementById('edit_staff_address').value = this.dataset.address || '';
+        document.getElementById('edit_staff_calendar').value = this.dataset.calendar || '';
     });
+});
 
     document.querySelectorAll('.edit-admin-btn').forEach(btn => {
         btn.addEventListener('click', function() {
